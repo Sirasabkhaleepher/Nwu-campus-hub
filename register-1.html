@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Create account - Northwest Campus Hub</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="login" id="box"></div>
+<div id="toast" role="status"></div>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,createUserWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,doc,setDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {firebaseConfig,DOMAIN} from "./firebase-config.js";
+
+const $=s=>document.querySelector(s);
+const toast=m=>{const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',3500)};
+const FIELDS=[['school','School','e.g. Northwest University'],['faculty','Faculty','e.g. Science (or N/A)'],['department','Department',''],['course','Course',''],['level','Level','e.g. 200 level'],['ug','UG number','']];
+
+if(firebaseConfig.apiKey.startsWith('PASTE')){
+  $('#box').innerHTML='<h1>Almost ready</h1><p>Paste your Firebase settings into <b>firebase-config.js</b> first.</p>';
+}else{
+  const auth=getAuth(initializeApp(firebaseConfig)),db=getFirestore();
+  $('#box').innerHTML=`<h1>Create your account</h1><p class="meta">Fill in every box. You will use your username and password to log in.</p>
+  ${FIELDS.map(([f,l,p])=>`<label for="${f}">${l}</label><input id="${f}" placeholder="${p}">`).join('')}
+  <label for="un">Username</label><input id="un" autocapitalize="none" placeholder="letters, numbers, . or _ (3 to 20)">
+  <label for="pw">Password</label><input id="pw" type="password" autocomplete="new-password" placeholder="at least 6 characters">
+  <label for="pw2">Confirm password</label><input id="pw2" type="password" autocomplete="new-password">
+  <button class="btn full" id="go">Create account</button>
+  <p class="meta" style="margin-top:1rem">Already have an account? <a href="index.html">Log in</a></p>`;
+  $('#go').onclick=async()=>{
+    const p={};FIELDS.forEach(([f])=>p[f]=$('#'+f).value.trim());
+    const un=$('#un').value.trim().toLowerCase(),pw=$('#pw').value;
+    if(FIELDS.some(([f])=>!p[f])||!un||!pw)return toast('Fill in every box.');
+    if(!/^[a-z0-9._]{3,20}$/.test(un))return toast('Username: 3 to 20 letters, numbers, dots or underscores.');
+    if(pw.length<6)return toast('Password must be at least 6 characters.');
+    if(pw!==$('#pw2').value)return toast('The two passwords do not match.');
+    $('#go').disabled=true;
+    try{
+      const c=await createUserWithEmailAndPassword(auth,un+DOMAIN,pw);
+      try{await setDoc(doc(db,'students',c.user.uid),{...p,username:un,created:serverTimestamp()})}
+      catch(e){await c.user.delete();throw e}
+      location.href='index.html';
+    }catch(e){
+      $('#go').disabled=false;
+      toast(e.code==='auth/email-already-in-use'?'That username is taken. Choose another.':e.code==='permission-denied'?'Not allowed. Check your Firestore rules.':e.message);
+    }
+  };
+}
+</script>
+</body>
+</html>
