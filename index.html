@@ -4,214 +4,132 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NWU Campus Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#0b2e2b;--pine:#125149;--mint:#d8ebe7;--chalk:#f2f7f5;--gold:#f2b705;--line:#c7d8d3}
-*{box-sizing:border-box}
-body{margin:0;font:16px/1.5 'Inter',sans-serif;background:radial-gradient(1000px 600px at 10% 0%, #e8f3f0 0%, var(--chalk) 60%);color:var(--ink);min-height:100vh}
-h1{font-family:'Outfit',sans-serif;font-size:2.2rem;line-height:1.1;margin:0 0.4em;color:var(--ink)}
-.login-wrap{min-height:100vh;display:grid;place-items:center;padding:1.2rem;background:linear-gradient(180deg,var(--ink) 0%, var(--ink) 38%, var(--mint) 38%, var(--chalk) 100%)}
-.login{width:100%;max-width:420px;background:#fff;border-radius:22px;padding:1.8rem 1.6rem 1.4rem;box-shadow:0 20px 60px rgba(11,46,43,.18);border:1.5px solid #dbe8e4;position:relative;overflow:hidden}
-.login:before{content:"";position:absolute;top:0;left:0;right:0;height:7px;background:linear-gradient(90deg,var(--pine),var(--gold))}
-.badge{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--pine),#0e3f39);color:#fff;display:grid;place-items:center;font:800 1.4rem 'Outfit';margin-bottom:1rem;box-shadow:0 8px 20px rgba(18,81,73,.35)}
-.meta{color:#5a7e78;font-size:.92rem;margin:.2rem 0 1rem}
-label{font-weight:700;font-size:.88rem;color:var(--ink);display:block;margin-top:.8rem}
-input{width:100%;padding:.85rem 1rem;border-radius:14px;border:1.8px solid var(--line);background:#f8fbf9;margin:.35rem 0.9rem;font-size:1rem;transition:.2s}
-input:focus{outline:none;border-color:var(--pine);background:#fff;box-shadow:0 0 0 4px rgba(18,81,73,.15)}
-.btn{background:linear-gradient(135deg,var(--pine),var(--ink));color:#fff;border:0;border-radius:14px;padding:.9rem 1.2rem;width:100%;font-weight:800;cursor:pointer;box-shadow:0 10px 24px rgba(11,46,43,.22);transition:.2s;margin-top:.4rem}
-.btn:hover{transform:translateY(-1px)}
-.btn.alt{background:#fff;color:var(--pine);border:2px solid var(--pine);box-shadow:none}
-.or{text-align:center;color:#6b8a85;font-size:.85rem;margin:1.1rem 0;position:relative}
-.or:before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line)}
-.or span{background:#fff;padding:0.8rem;position:relative}
-a{color:var(--pine);font-weight:600}
-.top{background:var(--ink);color:#fff;padding:1rem;position:sticky;top:0;z-index:5}
-.wrap{max-width:900px;margin:0 auto;padding:1rem}
-.tabs{display:flex;gap:.4rem;overflow-x:auto;padding:.7rem 0;border-bottom:2px solid var(--line);margin-bottom:1rem}
-.tabs button{border:1.5px solid var(--line);background:#fff;padding:.5rem 1rem;border-radius:999px;font-weight:700;cursor:pointer;white-space:nowrap}
-.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.card{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:1rem;margin-bottom:.8rem;box-shadow:0 6px 20px rgba(0,0,0,.04)}
-.doc{border-left:6px solid var(--gold)}
-.row{display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;align-items:center}
-#toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:.7rem 1rem;border-radius:999px;display:none;z-index:9}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:#eef6f3;color:#0b2e2b}
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:16px;background:linear-gradient(180deg,#0b2e2b 0%,#0b2e2b 38%,#d8ebe7 38%,#eef6f3 100%)}
+.login{width:100%;max-width:400px;background:#fff;border-radius:20px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.2);border-top:6px solid #f2b705}
+.badge{width:48px;height:48px;border-radius:12px;background:#125149;color:#fff;display:grid;place-items:center;font-weight:900;font-size:22px}
+.meta{color:#5a7e78;font-size:14px;margin:8px 0 16px}
+label{font-weight:700;font-size:13px;display:block;margin-top:12px}
+input,textarea,select{width:100%;padding:12px;border-radius:12px;border:1.5px solid #c7d8d3;background:#f8fbf9;margin-top:6px;font-size:15px}
+.btn{width:100%;padding:12px;border-radius:12px;border:0;background:#125149;color:#fff;font-weight:800;cursor:pointer;margin-top:12px}
+.btn.alt{background:#fff;color:#125149;border:2px solid #125149}
+.top{background:#0b2e2b;color:#fff;padding:12px;position:sticky;top:0;z-index:5}
+.wrap{max-width:900px;margin:0 auto;padding:16px}
+.tabs{display:flex;gap:6px;overflow:auto;padding:8px 0;border-bottom:2px solid #c7d8d3;margin-bottom:12px}
+.tabs button{border:1.5px solid #c7d8d3;background:#fff;padding:8px 14px;border-radius:999px;font-weight:700;cursor:pointer}
+.tabs button.on{background:#0b2e2b;color:#fff}
+.card{background:#fff;border:1.5px solid #c7d8d3;border-radius:14px;padding:14px;margin-bottom:10px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0b2e2b;color:#fff;padding:10px 16px;border-radius:999px;display:none}
 </style>
 </head>
 <body>
-<div id="app"><div class="login-wrap"><div class="login"><div class="badge">N</div><h1>Northwest Campus Hub</h1><p class="meta">Loading...</p></div></div></div>
+<div id="app"><div class="login-wrap"><div class="login"><div class="badge">N</div><h2>Loading...</h2></div></div></div>
 <div id="toast"></div>
-
 <script>
-var CONFIG={
-  apiKey:"AIzaSyDGeRhDoDdJzxpyuo7zHg0L50D1Cc6jNmg",
-  authDomain:"nwu-campus-hub.firebaseapp.com",
-  projectId:"nwu-campus-hub",
-  appId:"1:1085860624193:web:368c85ba431d99ee2293c0"
-};
+var CONFIG={apiKey:"AIzaSyDGeRhDoDdJzxpyuo7zHg0L50D1Cc6jNmg",authDomain:"nwu-campus-hub.firebaseapp.com",projectId:"nwu-campus-hub",appId:"1:1085860624193:web:368c85ba431d99ee2293c0"};
 var ADMINS=["khaleephakabara@gmail.com"];
 </script>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 (function(){
-const $=s=>document.querySelector(s);
-const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const safeUrl=u=>/^https?:\/\//i.test(u)?u:'#';
-const today=()=>new Date().toISOString().slice(0,10);
-const app=$('#app');
-const toast=m=>{if(!m)return;const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',3500)};
-const ERR={'auth/invalid-credential':'Wrong username or password.','auth/wrong-password':'Wrong username or password.','auth/user-not-found':'Wrong username or password.','auth/too-many-requests':'Too many tries.','auth/popup-closed-by-user':'','auth/cancelled-popup-request':'','auth/unauthorized-domain':'Add domain to Firebase.','permission-denied':'Check Firestore rules.'};
-const err=e=>ERR[e.code]!==undefined?ERR[e.code]:e.message;
-const DOMAIN='@nwhub.example.com';
-const TS=()=>firebase.firestore.FieldValue.serverTimestamp();
-const FIELDS=[['school','School','Northwest University'],['faculty','Faculty','Computing'],['department','Department','Software Engineering'],['course','Course',''],['level','Level','200 level'],['ug','UG number','']];
-const F={handouts:[['title','Title'],['subject','Subject'],['link','Google Drive link']],announcements:[['title','Title'],['body','Message','area']],settings:[['name','Site name'],['welcome','Welcome message','area']]};
-let auth,db,user=null,role,me,registering=false,editing=null,tab='dashboard',q='',subj='',unsubs=[];
-let D={handouts:[],announcements:[],students:[]},S={name:'Northwest Campus Hub',welcome:'Find your handouts and campus news here.'};
-const loginView=()=>`<div class="login-wrap"><div class="login"><div class="badge">N</div><h1>Northwest<br>Campus Hub</h1><p class="meta">Log in with your username and password.</p><label>Username</label><input id="un" autocomplete="username" placeholder="e.g. khaleepha"><label>Password</label><input id="pw" type="password" onkeydown="if(event.key==='Enter')login()" placeholder="••••••••"><button class="btn" onclick="login()">Log in</button><p class="meta" style="margin-top:1rem">New here? <a href="#register">Create an account</a></p><div class="or"><span>Admin?</span></div><button class="btn alt" onclick="adminLogin()">Sign in with Google</button></div></div>`;
-const regView=()=>`<div class="login-wrap"><div class="login"><div class="badge">N</div><h1>Create account</h1><p class="meta">Fill every box.</p>${FIELDS.map(([f,l,p])=>`<label>${l}</label><input id="${f}" placeholder="${p}">`).join('')}<label>Username</label><input id="un" placeholder="letters, numbers,. _"><label>Password</label><input id="pw" type="password" placeholder="min 6 chars"><label>Confirm password</label><input id="pw2" type="password"><button class="btn" id="go" onclick="reg()">Create account</button><p class="meta" style="margin-top:1rem"><a href="#">Back to login</a></p></div></div>`;
-const outView=()=>location.hash==='#register'?regView():loginView();
-async function boot(u){
-  if(registering)return;
-  unsubs.forEach(f=>f());unsubs=[];user=u;role=null;me=null;
-  if(!u){app.innerHTML=outView();return}
-  if(ADMINS.indexOf((u.email||'').toLowerCase())>=0)role='admin';
-  else{try{const s=await db.doc('students/'+u.uid).get();if(s.exists){role='student';me=s.data()}}catch(e){toast(err(e))}}
-  if(!role){app.innerHTML=`<div class="login-wrap"><div class="login"><h1>No account found</h1><p>No student for this login.</p><button class="btn" onclick="logout()">Log out</button></div></div>`;return}
-  const on=(ref,fn)=>unsubs.push(ref.onSnapshot(fn,e=>toast(err(e))));
-  ['handouts','announcements'].forEach(k=>on(db.collection(k).orderBy('created','desc'),s=>{D[k]=s.docs.map(d=>Object.assign({id:d.id},d.data()));paint()}));
-  on(db.doc('settings/site'),s=>{S=Object.assign({},S,s.data()||{});paint()});
-  if(role==='admin')on(db.collection('students'),s=>{D.students=s.docs.map(d=>Object.assign({id:d.id},d.data()));paint()});
-  shell();
+var DOMAIN='@nwhub.example.com';
+var app=document.getElementById('app');
+var toastEl=document.getElementById('toast');
+function toast(m){if(!m)return;toastEl.textContent=m;toastEl.style.display='block';clearTimeout(toastEl._t);toastEl._t=setTimeout(function(){toastEl.style.display='none'},3500);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+var auth,db,user=null,role=null,me=null,tab='dashboard',q='',subj='',unsubs=[],editing=null,registering=false;
+var D={handouts:[],announcements:[],students:[]};
+var S={name:'Northwest Campus Hub',welcome:'Welcome to NWU Campus Hub - Find handouts and news here'};
+function loginHTML(){return '<div class="login-wrap"><div class="login"><div class="badge">N</div><h2>Northwest<br>Campus Hub</h2><p class="meta">Login with your username</p><label>Username</label><input id="un" placeholder="e.g. khaleepha"><label>Password</label><input id="pw" type="password"><button class="btn" onclick="doLogin()">Log in</button><p class="meta" style="margin-top:16px">New here? <a href="#register">Create account</a></p><div style="text-align:center;color:#6b8a85;margin:12px 0">Admin?</div><button class="btn alt" onclick="doAdmin()">Sign in with Google</button></div></div>';}
+function regHTML(){return '<div class="login-wrap"><div class="login"><div class="badge">N</div><h2>Create account</h2><p class="meta">Fill every box</p><label>School</label><input id="school"><label>Faculty</label><input id="faculty"><label>Department</label><input id="department"><label>Course</label><input id="course"><label>Level</label><input id="level"><label>UG number</label><input id="ug"><label>Username</label><input id="un"><label>Password</label><input id="pw" type="password"><label>Confirm</label><input id="pw2" type="password"><button class="btn" id="go" onclick="doReg()">Create account</button><p class="meta"><a href="#">Back to login</a></p></div></div>';}
+function boot(u){
+ if(registering)return;unsubs.forEach(function(f){f()});unsubs=[];user=u;role=null;me=null;
+ if(!u){app.innerHTML=location.hash==='#register'?regHTML():loginHTML();return;}
+ var email=(u.email||'').toLowerCase();
+ if(ADMINS.indexOf(email)>=0){role='admin';listen();shell();}
+ else{db.doc('students/'+u.uid).get().then(function(s){if(s.exists){role='student';me=s.data();listen();shell();}else{app.innerHTML='<div class="login-wrap"><div class="login"><h2>No account</h2><p class="meta">No student found for this login.</p><button class="btn" onclick="firebase.auth().signOut()">Log out</button></div></div>';}}).catch(function(e){toast(e.message)});return;}
+}
+function listen(){
+ unsubs.push(db.collection('handouts').orderBy('created','desc').onSnapshot(function(s){D.handouts=s.docs.map(function(d){var o=d.data();o.id=d.id;return o;});paint();}));
+ unsubs.push(db.collection('announcements').orderBy('created','desc').onSnapshot(function(s){D.announcements=s.docs.map(function(d){var o=d.data();o.id=d.id;return o;});paint();}));
+ unsubs.push(db.doc('settings/site').onSnapshot(function(s){if(s.data())S=s.data();paint();}));
+ if(role==='admin'){unsubs.push(db.collection('students').onSnapshot(function(s){D.students=s.docs.map(function(d){var o=d.data();o.id=d.id;return o;});paint();}));}
 }
 function shell(){
-  const head=`<div class="top"><div class="wrap" style="display:flex;justify-content:space-between;align-items:center"><h1 style="font-size:1.25rem;margin:0" id="hname"></h1><div>${role==='admin'?'Admin':'Hi, '+esc(me.username)} <button class="btn alt" style="width:auto;padding:.3rem.8rem;margin-left:.6rem" onclick="logout()">Logout</button></div></div></div>`;
-  if(role==='admin'){app.innerHTML=head+`<div class="wrap"><div class="tabs" id="tabs"></div><div id="form"></div><div id="list"></div></div>`;adminView();return}
-  app.innerHTML=head+`<div class="wrap"><p class="meta" id="wl"></p><h2>Announcements</h2><div id="ann"></div><h2 style="margin-top:1.5rem">Handouts</h2><div style="display:flex;gap:.6rem;margin:.6rem 0"><input placeholder="Search" oninput="setQ(this.value)" style="margin:0"><select id="sj" onchange="setSubj(this.value)" style="margin:0;max-width:160px"></select></div><div id="hl"></div></div>`;
-  paint();
+ var top='<div class="top"><div class="wrap" style="display:flex;justify-content:space-between;align-items:center"><h1 style="font-size:16px;margin:0" id="hname"></h1><div><span id="who"></span> <button class="btn alt" style="width:auto;padding:4px 10px;margin-left:8px" onclick="firebase.auth().signOut()">Logout</button></div></div></div>';
+ if(role==='admin'){app.innerHTML=top+'<div class="wrap"><div class="tabs" id="tabs"></div><div id="form"></div><div id="list"></div></div>';adminView();return;}
+ app.innerHTML=top+'<div class="wrap"><p class="meta" id="wl"></p><h3>Announcements</h3><div id="ann"></div><h3 style="margin-top:20px">Handouts</h3><div style="display:flex;gap:8px"><input placeholder="Search" oninput="setQ(this.value)" style="margin:0"><select id="sj" onchange="setSubj(this.value)" style="margin:0;max-width:140px"></select></div><div id="hl" style="margin-top:10px"></div></div>';
+ paint();
 }
 function adminView(){
-  $('#tabs').innerHTML=[['dashboard','Dashboard'],['handouts','Handouts'],['students','Students'],['announcements','Announcements'],['settings','Settings']].map(([k,l])=>`<button class="${tab===k?'on':''}" onclick="go('${k}')">${l}</button>`).join('');
-  if(tab==='dashboard')$('#form').innerHTML='';
-  else if(tab==='students')$('#form').innerHTML='<input placeholder="Search students" oninput="setQ(this.value)">';
-  else{
-    const e=tab==='settings'?S:(D[tab].find(x=>x.id===editing)||{});
-    $('#form').innerHTML=`<div class="card"><h3>${editing?'Edit':'Add'} ${tab}</h3>${F[tab].map(([f,l,t])=>`<label>${l}</label>${t?`<textarea id="f_${f}" rows="4">${esc(e[f]||'')}</textarea>`:`<input id="f_${f}" value="${esc(e[f]||'')}">`}`).join('')}<button class="btn" onclick="save('${tab}')">Save</button> ${editing?'<button class="btn alt" style="margin-top:.6rem" onclick="cancel()">Cancel</button>':''}</div>`;
-  }
-  paint();
+ var tabs=document.getElementById('tabs');
+ tabs.innerHTML='<button class="'+(tab==='dashboard'?'on':'')+'" onclick="goTab(\'dashboard\')">Dashboard</button><button class="'+(tab==='handouts'?'on':'')+'" onclick="goTab(\'handouts\')">Handouts</button><button class="'+(tab==='students'?'on':'')+'" onclick="goTab(\'students\')">Students</button><button class="'+(tab==='announcements'?'on':'')+'" onclick="goTab(\'announcements\')">Announcements</button><button class="'+(tab==='settings'?'on':'')+'" onclick="goTab(\'settings\')">Settings</button>';
+ var form=document.getElementById('form');
+ if(tab==='dashboard'){form.innerHTML='';}
+ else if(tab==='students'){form.innerHTML='<input placeholder="Search students" oninput="setQ(this.value)">';}
+ else{
+  var e={};if(tab==='settings')e=S;else if(editing){var f=D[tab].find(function(x){return x.id===editing});if(f)e=f;}
+  var html='<div class="card"><h3>'+esc(editing?'Edit ':'Add ')+esc(tab)+'</h3>';
+  if(tab==='handouts'){html+='<label>Title</label><input id="f_title" value="'+esc(e.title||'')+'"><label>Subject</label><input id="f_subject" value="'+esc(e.subject||'')+'"><label>Drive Link</label><input id="f_link" value="'+esc(e.link||'')+'">';}
+  if(tab==='announcements'){html+='<label>Title</label><input id="f_title" value="'+esc(e.title||'')+'"><label>Message</label><textarea id="f_body" rows="4">'+esc(e.body||'')+'</textarea>';}
+  if(tab==='settings'){html+='<label>Site Name</label><input id="f_name" value="'+esc(e.name||'')+'"><label>Welcome</label><textarea id="f_welcome" rows="3">'+esc(e.welcome||'')+'</textarea>';}
+  html+='<button class="btn" onclick="doSave(\''+tab+'\')">Save</button>'+(editing?'<button class="btn alt" onclick="doCancel()">Cancel</button>':'')+'</div>';
+  form.innerHTML=html;
+ }
+ paint();
 }
 function paint(){
-  if(!role||!$('#hname'))return;
-  $('#hname').textContent=S.name;
-  if(role==='admin'){
-    const L=$('#list');
-    if(tab==='dashboard')L.innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem"><div class="card"><b style="font-size:1.8rem">${D.handouts.length}</b><div class="meta">Handouts</div></div><div class="card"><b style="font-size:1.8rem">${D.students.length}</b><div class="meta">Students</div></div><div class="card"><b style="font-size:1.8rem">${D.announcements.length}</b><div class="meta">Announcements</div></div></div>`;
-    else if(tab==='settings')L.innerHTML='';
-    else if(tab==='students'){
-      const r=D.students.filter(s=>[s.username,s.ug,s.course].join(' ').toLowerCase().includes(q.toLowerCase()));
-      L.innerHTML=r.map(s=>`<div class="card row"><div><b>${esc(s.username)}</b> - ${esc(s.ug)}<div class="meta">${esc(s.course)}</div></div><button class="btn alt" style="width:auto" onclick="del('students','${esc(s.id)}')">Delete</button></div>`).join('')||'<div class="card">No students</div>';
-    }else L.innerHTML=D[tab].map(x=>`<div class="card row"><div><b>${esc(x.title)}</b><div class="meta">${esc(x.subject||x.date)}</div></div><div><button class="btn alt" style="width:auto" onclick="edit('${esc(x.id)}')">Edit</button> <button class="btn alt" style="width:auto;margin-left:.4rem" onclick="del('${tab}','${esc(x.id)}')">Del</button></div></div>`).join('')||'<div class="card">Nothing yet</div>';
-    return;
+ var hn=document.getElementById('hname');if(!hn)return;
+ hn.textContent=S.name;
+ var who=document.getElementById('who');if(who)who.textContent=role==='admin'?'Admin':'Hi, '+(me?me.username:'');
+ var wl=document.getElementById('wl');if(wl)wl.textContent=S.welcome;
+ if(role==='admin'){
+  var L=document.getElementById('list');
+  if(tab==='dashboard'){L.innerHTML='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"><div class="card"><b style="font-size:22px">'+D.handouts.length+'</b><div class="meta">Handouts</div></div><div class="card"><b style="font-size:22px">'+D.students.length+'</b><div class="meta">Students</div></div><div class="card"><b style="font-size:22px">'+D.announcements.length+'</b><div class="meta">Announcements</div></div></div>';return;}
+  if(tab==='settings'){L.innerHTML='';return;}
+  if(tab==='students'){
+   var r=D.students.filter(function(s){return (s.username+' '+s.ug+' '+s.course).toLowerCase().indexOf(q.toLowerCase())>=0;});
+   var h='';for(var i=0;i<r.length;i++){var s=r[i];h+='<div class="card row"><div><b>'+esc(s.username)+'</b> - '+esc(s.ug)+'<div class="meta">'+esc(s.course)+'</div></div><button class="btn alt" style="width:auto" onclick="doDel(\'students\',\''+esc(s.id)+'\')">Delete</button></div>';}
+   L.innerHTML=h||'<div class="card">No students</div>';return;
   }
-  $('#wl').textContent=S.welcome;
-  $('#ann').innerHTML=D.announcements.map(a=>`<div class="card"><b>${esc(a.title)}</b><div>${esc(a.body)}</div><div class="meta">${esc(a.date)}</div></div>`).join('')||'<div class="card">No announcements</div>';
-  const subs=[...new Set(D.handouts.map(h=>h.subject))].sort();
-  $('#sj').innerHTML='<option value="">All</option>'+subs.map(x=>`<option ${x===subj?'selected':''}>${esc(x)}</option>`).join('');
-  const r=D.handouts.filter(h=>(!subj||h.subject===subj)&&(h.title+h.subject).toLowerCase().includes(q.toLowerCase()));
-  $('#hl').innerHTML=r.map(h=>`<div class="card doc row"><div><b>${esc(h.title)}</b><div class="meta">${esc(h.subject)} · ${esc(h.date)}</div></div><a class="btn" style="width:auto;text-decoration:none;padding:.5rem 1rem" href="${esc(safeUrl(h.link))}" target="_blank">Open</a></div>`).join('')||'<div class="card">No handouts</div>';
+  var h2='';for(var j=0;j<D[tab].length;j++){var x=D[tab][j];h2+='<div class="card row"><div><b>'+esc(x.title)+'</b><div class="meta">'+esc(x.subject||x.date||'')+'</div></div><div><button class="btn alt" style="width:auto" onclick="doEdit(\''+esc(x.id)+'\')">Edit</button> <button class="btn alt" style="width:auto;margin-left:4px" onclick="doDel(\''+tab+'\',\''+esc(x.id)+'\')">Del</button></div></div>';}
+  L.innerHTML=h2||'<div class="card">Nothing yet</div>';return;
+ }
+ var ann=document.getElementById('ann');if(ann){var ha='';for(var a=0;a<D.announcements.length;a++){var an=D.announcements[a];ha+='<div class="card"><b>'+esc(an.title)+'</b><div>'+esc(an.body)+'</div><div class="meta">'+esc(an.date||'')+'</div></div>';}ann.innerHTML=ha||'<div class="card">No announcements</div>';}
+ var sj=document.getElementById('sj');if(sj){var subs=[];for(var k=0;k<D.handouts.length;k++){if(subs.indexOf(D.handouts[k].subject)<0)subs.push(D.handouts[k].subject);}subs.sort();var sh='<option value="">All</option>';for(var m=0;m<subs.length;m++){sh+='<option '+(subs[m]===subj?'selected':'')+'>'+esc(subs[m])+'</option>';}sj.innerHTML=sh;}
+ var hl=document.getElementById('hl');if(hl){var rh='';for(var n=0;n<D.handouts.length;n++){var hh=D.handouts[n];if(subj&&hh.subject!==subj)continue;if(q&&(hh.title+hh.subject).toLowerCase().indexOf(q.toLowerCase())<0)continue;rh+='<div class="card row" style="border-left:5px solid #f2b705"><div><b>'+esc(hh.title)+'</b><div class="meta">'+esc(hh.subject)+' - '+esc(hh.date||'')+'</div></div><a class="btn" style="width:auto;text-decoration:none;padding:8px 14px" href="'+esc(hh.link)+'" target="_blank">Open</a></div>';}hl.innerHTML=rh||'<div class="card">No handouts</div>';}
 }
-Object.assign(window,{
-  setQ:v=>{q=v;paint()},setSubj:v=>{subj=v;paint()},
-  login:async()=>{const u=$('#un').value.trim().toLowerCase(),p=$('#pw').value;if(!u||!p)return toast('Enter username & password');try{await auth.signInWithEmailAndPassword(u+DOMAIN,p)}catch(e){toast(err(e))}},
-  adminLogin:async()=>{try{await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())}catch(e){toast(err(e))}},
-  logout:()=>auth.signOut(),
-  reg:async()=>{
-    const p={};FIELDS.forEach(([f])=>p[f]=$('#'+f).value.trim());
-    const un=$('#un').value.trim().toLowerCase(),pw=$('#pw').value;
-    if(FIELDS.some(([f])=>!p[f])||!un||!pw)return toast('Fill every box');
-    if(pw!==$('#pw2').value)return toast('Passwords not match');
-    $('#go').disabled=true;registering=true;
-    try{
-      const c=await auth.createUserWithEmailAndPassword(un+DOMAIN,pw);
-      await db.doc('students/'+c.user.uid).set(Object.assign({},p,{username:un,created:TS()}));
-      registering=false;location.hash='';boot(c.user);
-    }catch(e){registering=false;$('#go').disabled=false;toast(e.code==='auth/email-already-in-use'?'Username taken':err(e))}
-  },
-  go:t=>{tab=t;editing=null;adminView()},cancel:()=>{editing=null;adminView()},edit:id=>{editing=id;adminView()},
-  del:async(k,id)=>{if(confirm('Delete?'))await db.doc(k+'/'+id).delete()},
-  save:async k=>{
-    const o={};F[k].forEach(([f])=>o[f]=$('#f_'+f).value.trim());
-    if(F[k].some(([f])=>!o[f]))return toast('Fill every field');
-    try{
-      if(k==='settings')await db.doc('settings/site').set(o);
-      else{if(k==='handouts'&&!/^https?:\/\//i.test(o.link))return toast('Link must start https://');if(editing)await db.doc(k+'/'+editing).update(o);else await db.collection(k).add(Object.assign({},o,{date:today(),created:TS()}));}
-      toast('Saved');editing=null;adminView();
-    }catch(e){toast(err(e))}
-  }
-});
+window.setQ=function(v){q=v;paint()};window.setSubj=function(v){subj=v;paint()};
+window.doLogin=function(){var u=document.getElementById('un').value.trim().toLowerCase();var p=document.getElementById('pw').value;if(!u||!p)return toast('Enter username & password');if(u.indexOf('@')>=0)u=u.split('@')[0];auth.signInWithEmailAndPassword(u+DOMAIN,p).catch(function(){toast('Wrong username or password');});};
+window.doAdmin=function(){var prov=new firebase.auth.GoogleAuthProvider();auth.signInWithPopup(prov).catch(function(e){toast(e.message)});};
+window.doReg=function(){
+ var data={school:document.getElementById('school').value.trim(),faculty:document.getElementById('faculty').value.trim(),department:document.getElementById('department').value.trim(),course:document.getElementById('course').value.trim(),level:document.getElementById('level').value.trim(),ug:document.getElementById('ug').value.trim()};
+ var un=document.getElementById('un').value.trim().toLowerCase();if(un.indexOf('@')>=0)un=un.split('@')[0];
+ var pw=document.getElementById('pw').value;var pw2=document.getElementById('pw2').value;
+ if(!data.school||!data.faculty||!data.department||!data.course||!data.level||!data.ug||!un||!pw)return toast('Fill every box');
+ if(pw!==pw2)return toast('Passwords not match');
+ document.getElementById('go').disabled=true;registering=true;
+ auth.createUserWithEmailAndPassword(un+DOMAIN,pw).then(function(c){return db.doc('students/'+c.user.uid).set({school:data.school,faculty:data.faculty,department:data.department,course:data.course,level:data.level,ug:data.ug,username:un,created:firebase.firestore.FieldValue.serverTimestamp()});}).then(function(){registering=false;location.hash='';boot(auth.currentUser);}).catch(function(e){registering=false;document.getElementById('go').disabled=false;toast(e.code==='auth/email-already-in-use'?'Username taken':e.message);});
+};
+window.goTab=function(t){tab=t;editing=null;adminView();};
+window.doCancel=function(){editing=null;adminView();};
+window.doEdit=function(id){editing=id;adminView();};
+window.doDel=function(k,id){if(confirm('Delete?'))db.doc(k+'/'+id).delete();};
+window.doSave=function(k){
+ var o={};
+ if(k==='handouts'){o.title=document.getElementById('f_title').value.trim();o.subject=document.getElementById('f_subject').value.trim();o.link=document.getElementById('f_link').value.trim();if(!o.title||!o.subject||!o.link)return toast('Fill every field');}
+ if(k==='announcements'){o.title=document.getElementById('f_title').value.trim();o.body=document.getElementById('f_body').value.trim();if(!o.title||!o.body)return toast('Fill every field');}
+ if(k==='settings'){o.name=document.getElementById('f_name').value.trim();o.welcome=document.getElementById('f_welcome').value.trim();if(!o.name||!o.welcome)return toast('Fill every field');}
+ if(k==='settings'){db.doc('settings/site').set(o).then(function(){toast('Saved');editing=null;adminView();});}
+ else{if(editing){db.doc(k+'/'+editing).update(o).then(function(){toast('Saved');editing=null;adminView();});}else{o.date=new Date().toISOString().slice(0,10);o.created=firebase.firestore.FieldValue.serverTimestamp();db.collection(k).add(o).then(function(){toast('Saved');editing=null;adminView();});}}
+};
 firebase.initializeApp(CONFIG);auth=firebase.auth();db=firebase.firestore();
 auth.onAuthStateChanged(boot);
-window.addEventListener('hashchange',()=>{if(!user&&!registering)app.innerHTML=outView()});
-})();
-</script>
-</body>
-</html>><p>Students create accounts with username. You add handouts with Google Drive links. Everything shows instantly.</p></div>`;
-    else if(tab==='settings')L.innerHTML='';
-    else if(tab==='students'){
-      const r=D.students.filter(s=>[s.username,s.ug,s.school,s.faculty,s.department,s.course,s.level].join(' ').toLowerCase().indexOf(q.toLowerCase())>=0);
-      L.innerHTML=`<h2>Registered students (${r.length})</h2>`+(r.length?r.map(s=>`<div class="card row"><div><b>${esc(s.username)}</b> · UG ${esc(s.ug)}<div class="meta">${esc(s.course)} · ${esc(s.department)}</div></div><button class="btn del sm" onclick="del('students','${esc(s.id)}')">Remove</button></div>`).join(''):'<div class="empty">No students found.</div>');
-    }else L.innerHTML=`<h2>All ${tab} (${D[tab].length})</h2>`+(D[tab].length?D[tab].map(x=>`<div class="card row"><div><b>${esc(x.title)}</b><div class="meta">${esc(tab==='handouts'?x.subject:x.date)}</div></div><div><button class="btn alt sm" onclick="edit('${esc(x.id)}')">Edit</button> <button class="btn del sm" onclick="del('${tab}','${esc(x.id)}')">Delete</button></div></div>`).join(''):'<div class="empty">Nothing here yet.</div>');
-    return;
-  }
-  $('#wl').textContent=S.welcome;
-  $('#ann').innerHTML=D.announcements.length?D.announcements.map(a=>`<div class="card"><h3>${esc(a.title)}</h3><div>${esc(a.body)}</div><div class="meta">${esc(a.date)}</div></div>`).join(''):'<div class="empty">No announcements yet.</div>';
-  const subs=[...new Set(D.handouts.map(h=>h.subject))].sort();
-  $('#sj').innerHTML='<option value="">All subjects</option>'+subs.map(x=>`<option ${x===subj?'selected':''}>${esc(x)}</option>`).join('');
-  const r=D.handouts.filter(h=>(!subj||h.subject===subj)&&(h.title+h.subject).toLowerCase().indexOf(q.toLowerCase())>=0);
-  $('#hl').innerHTML=r.length?r.map(h=>`<div class="card doc row"><div><h3 style="margin:0">${esc(h.title)}</h3><div class="meta">${esc(h.subject)} · ${esc(h.date)}</div></div><a class="btn sm" style="text-decoration:none" href="${esc(safeUrl(h.link))}" target="_blank" rel="noopener">Open</a></div>`).join(''):'<div class="empty">No handouts match your search.</div>';
-}
-Object.assign(window,{
-  setQ:v=>{q=v;paint()},
-  setSubj:v=>{subj=v;paint()},
-  login:async()=>{const u=$('#un').value.trim().toLowerCase(),p=$('#pw').value;if(!u||!p)return toast('Enter username and password.');try{await auth.signInWithEmailAndPassword(u+DOMAIN,p)}catch(e){toast(err(e))}},
-  adminLogin:async()=>{try{await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())}catch(e){toast(err(e))}},
-  logout:()=>auth.signOut(),
-  reg:async()=>{
-    const p={};FIELDS.forEach(([f])=>p[f]=$('#'+f).value.trim());
-    const un=$('#un').value.trim().toLowerCase(),pw=$('#pw').value;
-    if(FIELDS.some(([f])=>!p[f])||!un||!pw)return toast('Fill in every box.');
-    if(!/^[a-z0-9._]{3,20}$/.test(un))return toast('Username: 3 to 20 letters, numbers, dots or underscores.');
-    if(pw.length<6)return toast('Password must be at least 6 characters.');
-    if(pw!==$('#pw2').value)return toast('The two passwords do not match.');
-    $('#go').disabled=true;registering=true;
-    try{
-      const c=await auth.createUserWithEmailAndPassword(un+DOMAIN,pw);
-      try{await db.doc('students/'+c.user.uid).set(Object.assign({},p,{username:un,created:TS()}))}
-      catch(e){await c.user.delete();throw e}
-      registering=false;location.hash='';boot(c.user);
-    }catch(e){registering=false;$('#go').disabled=false;toast(e.code==='auth/email-already-in-use'?'That username is taken.':err(e))}
-  },
-  go:t=>{tab=t;editing=null;q='';adminView()},
-  cancel:()=>{editing=null;adminView()},
-  edit:id=>{editing=id;adminView();scrollTo(0,0)},
-  del:async(k,id)=>{if(confirm('Remove?'))try{await db.doc(k+'/'+id).delete()}catch(e){toast(err(e))}},
-  save:async k=>{
-    const o={};F[k].forEach(([f])=>o[f]=$('#f_'+f).value.trim());
-    if(F[k].some(([f])=>!o[f]))return toast('Fill in every field.');
-    try{
-      if(k==='settings')await db.doc('settings/site').set(o);
-      else{
-        if(k==='handouts'&&!/^https?:\/\//i.test(o.link))return toast('Link must start with https://');
-        if(editing)await db.doc(k+'/'+editing).update(o);else await db.collection(k).add(Object.assign({},o,{date:today(),created:TS()}));
-      }
-      toast('Saved.');editing=null;if(k!=='settings')adminView();
-    }catch(e){toast(err(e))}
-  }
-});
-firebase.initializeApp(CONFIG);auth=firebase.auth();db=firebase.firestore();
-auth.onAuthStateChanged(boot);
-window.addEventListener('hashchange',()=>{if(!user&&!registering)app.innerHTML=outView()});
+window.addEventListener('hashchange',function(){if(!user&&!registering){app.innerHTML=location.hash==='#register'?regHTML():loginHTML();}});
 })();
 </script>
 </body>
