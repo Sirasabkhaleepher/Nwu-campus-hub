@@ -1,41 +1,33 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NWU Campus Hub</title>
+<html><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NWU Admin</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
-<style>
-*{box-sizing:border-box} body{font-family:Arial;margin:0;background:#f1f5f9}
-header{background:#1e40af;color:white;padding:15px;text-align:center;position:sticky;top:0;z-index:10}
-nav{display:flex;justify-content:center;gap:15px;background:#1e3a8a;padding:8px;color:white;font-size:14px}
-nav a{color:white;text-decoration:none;cursor:pointer}
-.card{background:white;margin:12px;padding:15px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-button{background:#1e40af;color:white;border:none;padding:11px 16px;border-radius:8px;width:100%;margin-top:8px;font-size:15px;cursor:pointer}
-input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:8px}
-.file{background:#f8fafc;padding:10px;border-radius:8px;margin:8px 0;display:flex;justify-content:space-between;align-items:center}
-.badge{background:#dbeafe;color:#1e40af;padding:4px 8px;border-radius:12px;font-size:11px}
-</style>
-</head>
-<body>
-<header><h2 style="margin:0">🎓 NWU Campus Hub</h2><p style="margin:3px;font-size:13px">Northwest University Kano - Software Engineering</p></header>
-<nav>
-<a onclick="show('home')">Home</a>
-<a onclick="show('files')">Files</a>
-<a onclick="show('ann')">Announcements</a>
-<a href="admin.html">Admin</a>
-</nav>
-
-<div id="authCard" class="card">
-<h3 id="welcomeMsg">Welcome! Login to access files</h3>
-<p id="status" style="font-size:13px;color:#64748b">Checking connection...</p>
-<input id="email" type="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<input id="matric" placeholder="Matric Number (for registration)">
-<select id="level" style="width:100%;padding:11px;margin:6px 0;border-radius:8px;border:1px solid #ddd">
-<option value="">Select Level</option><option>100L</option><option>200L</option><option>300L</option><option>400L</option>
-</select>
-<button onclick="login()">
+<style>body{font-family:Arial;background:#0f172a;color:white;padding:15px}.card{background:#1e293b;padding:20px;border-radius:15px;max-width:600px;margin:auto}input,select,textarea{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:none}button{background:#2563eb;color:white;padding:12px;border:none;border-radius:8px;width:100%;font-weight:bold;cursor:pointer}</style>
+</head><body>
+<div class="card">
+<h2>🎓 NWU Admin Panel</h2>
+<p id="st">Checking...</p>
+<div id="log"><input id="em" placeholder="Admin Email = Khaleephakabara@gmail.com"><input id="pw" type="password" placeholder="Password"><button onclick="login()">Login</button></div>
+<div id="up" style="display:none">
+<h3>Upload File (Use Google Drive Link)</h3>
+<select id="level"><option>100L</option><option selected>200L</option><option>300L</option><option>400L</option></select>
+<input id="course" placeholder="Course Code e.g. SEN201">
+<input id="title" placeholder="Title e.g. Lecture 1 Note">
+<textarea id="link" placeholder="Paste Google Drive share link"></textarea>
+<button onclick="saveFile()">Save File to Students</button>
+<textarea id="ann" placeholder="Announcement text" style="margin-top:20px"></textarea>
+<button onclick="saveAnn()">Post Announcement</button>
+<p id="msg"></p>
+</div></div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyDGeRhDoDdJzxpyuo7zHg0L50D1Cc6jNmg",authDomain:"nwu-campus-hub.firebaseapp.com",projectId:"nwu-campus-hub",storageBucket:"nwu-campus-hub.firebasestorage.app",messagingSenderId:"1085860624193",appId:"1:1085860624193:web:368c85ba431d99ee2293c0"};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(), db=firebase.firestore();
+auth.onAuthStateChanged(u=>{if(u){st.innerText="Logged in: "+u.email;log.style.display='none';up.style.display='block';}else{st.innerText="Please login as Admin";}});
+function login(){auth.signInWithEmailAndPassword(em.value,pw.value).then(()=>location.reload()).catch(e=>alert(e.message))}
+function saveFile(){db.collection("files").add({level:level.value,course:course.value,title:title.value,url:link.value,createdAt:new Date()}).then(()=>{msg.innerText="✅ File Saved! Students can see it now";})}
+function saveAnn(){db.collection("announcements").add({text:ann.value,createdAt:new Date()}).then(()=>{msg.innerText="✅ Announcement Posted!"})}
+</script></body></html>
