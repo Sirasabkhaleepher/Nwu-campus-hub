@@ -1,142 +1,191 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NWU Campus Hub</title>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Northwest Campus Hub</title>
 <style>
-*{box-sizing:border-box} body{font-family:Arial;margin:0;background:#f1f5f9}
-header{background:#1e40af;color:white;padding:15px;text-align:center;position:sticky;top:0;z-index:10}
-nav{display:flex;justify-content:center;gap:15px;background:#1e3a8a;padding:8px;color:white;font-size:14px}
-nav a{color:white;text-decoration:none;cursor:pointer}
-.card{background:white;margin:12px;padding:15px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-button{background:#1e40af;color:white;border:none;padding:11px 16px;border-radius:8px;width:100%;margin-top:8px;font-size:15px;cursor:pointer}
-input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:8px}
-.file{background:#f8fafc;padding:10px;border-radius:8px;margin:8px 0;display:flex;justify-content:space-between;align-items:center}
-.badge{background:#dbeafe;color:#1e40af;padding:4px 8px;border-radius:12px;font-size:11px}
-.toggle{display:flex;background:#e2e8f0;border-radius:8px;padding:3px;margin-bottom:12px}
-.toggle button{margin:0;width:50%;background:transparent;color:#475569}
-.toggle button.active{background:white;color:#1e40af;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+:root{--ink:#10302f;--pine:#1d5c57;--mint:#e3efec;--chalk:#f8faf9;--gold:#e8a83a;--red:#b23a3a;--line:#cfdcd8}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--chalk);color:var(--ink)}
+h1,h2,h3{font-family:Georgia,'Times New Roman',serif;line-height:1.2;margin:0 0.5em}
+h1{font-size:2rem}h2{font-size:1.4rem}h3{font-size:1.1rem}
+a{color:var(--pine)}
+button,input,textarea,select{font:inherit;color:inherit}
+input,textarea,select{width:100%;padding:.65rem.75rem;border:1.5px solid var(--line);border-radius:6px;background:#fff;margin:.25rem 0.9rem}
+input:focus,textarea:focus,select:focus,button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+label{font-weight:600;font-size:.9rem}
+.btn{background:var(--pine);color:#fff;border:0;border-radius:6px;padding:.65rem 1.1rem;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--ink)}
+.btn.alt{background:#fff;color:var(--pine);border:1.5px solid var(--pine)}
+.btn.del{background:#fff;color:var(--red);border:1.5px solid var(--red)}
+.btn.sm{padding:.35rem.7rem;font-size:.85rem}
+.btn.full{width:100%}
+.wrap{max-width:900px;margin:0 auto;padding:1rem}
+.top{background:var(--ink);color:#fff}
+.top.wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.top h1{font-size:1.25rem;margin:0}
+.who{display:flex;align-items:center;gap:.75rem;font-size:.9rem}
+.login{max-width:420px;margin:5vh auto;padding:1.5rem;background:#fff;border:1.5px solid var(--line);border-radius:10px}
+.or{text-align:center;color:#4b6663;font-size:.85rem;margin:1rem 0}
+.tabs{display:flex;gap:.4rem;overflow-x:auto;padding:.75rem 0;border-bottom:2px solid var(--line);margin-bottom:1rem}
+.tabs button{background:none;border:0;padding:.5rem.9rem;border-radius:6px;cursor:pointer;font-weight:600;white-space:nowrap}
+.tabs button.on{background:var(--mint);color:var(--pine)}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:1rem;margin-bottom:.8rem}
+.doc{border-left:6px solid var(--gold)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap}
+.meta{font-size:.85rem;color:#4b6663}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.8rem;margin-bottom:1rem}
+.stat{background:var(--mint);border-radius:8px;padding:1rem}
+.stat b{display:block;font:700 2rem Georgia,serif}
+.filters{display:grid;grid-template-columns:2fr 1fr;gap:.6rem}
+.empty{padding:1.5rem;text-align:center;color:#4b6663;border:1.5px dashed var(--line);border-radius:8px}
+#toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:.6rem 1rem;border-radius:6px;display:none;z-index:9;max-width:90%}
 </style>
 </head>
 <body>
-<header><h2 style="margin:0">🎓 NWU Campus Hub</h2><p style="margin:3px;font-size:13px">Northwest University Kano - Software Engineering</p></header>
-<nav>
-<a onclick="show('home')">Home</a>
-<a onclick="show('files')">Files</a>
-<a onclick="show('ann')">Announcements</a>
-<a href="admin.html">Admin</a>
-</nav>
-
-<div id="authCard" class="card">
-<h3 id="welcomeMsg">Welcome! Login to access files</h3>
-<p id="status" style="font-size:13px;color:#64748b">✅ Connected to NWU Firebase</p>
-
-<div class="toggle">
-<button id="loginTab" class="active" onclick="switchMode('login')">Login</button>
-<button id="regTab" onclick="switchMode('register')">Create Account</button>
-</div>
-
-<input id="email" type="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-
-<div id="regFields" style="display:none">
-<input id="matric" placeholder="Matric Number e.g. NWU/SE/22/0001">
-<select id="level" style="width:100%;padding:11px;margin:6px 0;border-radius:8px;border:1px solid #ddd">
-<option value="">Select Level</option><option>100L</option><option>200L</option><option>300L</option><option>400L</option>
-</select>
-<input id="dept" placeholder="Department (Software Engineering)">
-</div>
-
-<button id="mainBtn" onclick="login()">Login</button>
-<button onclick="logout()" id="logoutBtn" style="display:none;background:#ef4444">Logout</button>
-<p id="switchText" style="font-size:13px;text-align:center;color:#64748b">Don't have account? Click Create Account above</p>
-</div>
-
-<div id="home" class="card">
-<h3>📢 Latest Announcements</h3>
-<div id="annList">Loading...</div>
-</div>
-
-<div id="files" class="card" style="display:none">
-<h3>📚 Lecture Materials & Files</h3>
-<div id="filesList">Login to see files...</div>
-</div>
-
-<div id="ann" class="card" style="display:none">
-<h3>📢 All Announcements</h3>
-<div id="annAllList"></div>
-</div>
+<div id="app"><div class="login"><h1>Northwest Campus Hub</h1><p>Loading...</p></div></div>
+<div id="toast" role="status"></div>
 
 <script>
-let db, auth, currentUser=null, mode='login';
-setTimeout(()=>{
-  db=firebase.firestore(); auth=firebase.auth();
-  auth.onAuthStateChanged(user=>{
-    if(user){
-      currentUser=user;
-      document.getElementById('welcomeMsg').innerText="Hello, "+user.email;
-      document.getElementById('status').innerText="Logged in ✅";
-      document.getElementById('logoutBtn').style.display='block';
-      loadFiles(); loadAnns();
-    } else {
-      document.getElementById('logoutBtn').style.display='none';
-    }
-  });
-  loadAnns();
-},1000);
+var CONFIG={
+  apiKey:"AIzaSyDGeRhDoDdJzxpyuo7zHg0L50D1Cc6jNmg",
+  authDomain:"nwu-campus-hub.firebaseapp.com",
+  projectId:"nwu-campus-hub",
+  appId:"1:1085860624193:web:368c85ba431d99ee2293c0"
+};
+var ADMINS=["khaleephakabara@gmail.com"];
+</script>
 
-function switchMode(m){
-  mode=m;
-  document.getElementById('loginTab').classList.toggle('active', m=='login');
-  document.getElementById('regTab').classList.toggle('active', m=='register');
-  document.getElementById('regFields').style.display= m=='register'?'block':'none';
-  document.getElementById('mainBtn').innerText= m=='register'?'Create Account':'Login';
-  document.getElementById('mainBtn').onclick= m=='register'?register:login;
-  document.getElementById('mainBtn').style.background= m=='register'?'#10b981':'#1e40af';
-  document.getElementById('switchText').innerText= m=='register'?'Already have account? Click Login above':"Don't have account? Click Create Account above";
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl=u=>/^https?:\/\//i.test(u)?u:'#';
+const today=()=>new Date().toISOString().slice(0,10);
+const app=$('#app');
+const toast=m=>{if(!m)return;const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',3500)};
+const ERR={'auth/invalid-credential':'Wrong username or password.','auth/wrong-password':'Wrong username or password.','auth/user-not-found':'Wrong username or password.','auth/too-many-requests':'Too many tries. Wait a few minutes.','auth/popup-closed-by-user':'','auth/cancelled-popup-request':'','auth/unauthorized-domain':'Add this website address to Authorized domains in Firebase.','permission-denied':'Not allowed. Check your Firestore rules.'};
+const err=e=>ERR[e.code]!==undefined?ERR[e.code]:e.message;
+const DOMAIN='@nwhub.example.com';
+const TS=()=>firebase.firestore.FieldValue.serverTimestamp();
+const FIELDS=[['school','School','e.g. Northwest University'],['faculty','Faculty','e.g. Science'],['department','Department',''],['course','Course',''],['level','Level','e.g. 200 level'],['ug','UG number','']];
+const F={handouts:[['title','Title'],['subject','Subject'],['link','Google Drive link']],announcements:[['title','Title'],['body','Message','area']],settings:[['name','Site name'],['welcome','Welcome message','area']]};
+let auth,db,user=null,role,me,registering=false,editing=null,tab='dashboard',q='',subj='',unsubs=[];
+let D={handouts:[],announcements:[],students:[]},S={name:'Northwest Campus Hub',welcome:'Find your handouts and campus news here.'};
+const note=(t,b,out)=>`<div class="login"><h1>${t}</h1><p>${b}</p>${out?'<button class="btn full" onclick="logout()">Log out</button>':''}</div>`;
+const loginView=()=>`<div class="login"><h1>${esc(S.name)}</h1><p class="meta">Log in with your username and password.</p>
+<label>Username</label><input id="un" autocomplete="username" autocapitalize="none">
+<label>Password</label><input id="pw" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+<button class="btn full" onclick="login()">Log in</button>
+<p class="meta" style="margin-top:1rem">New here? <a href="#register">Create an account</a></p>
+<div class="or">Admin?</div><button class="btn alt full" onclick="adminLogin()">Sign in with Google</button></div>`;
+const regView=()=>`<div class="login"><h1>Create your account</h1><p class="meta">Fill in every box.</p>
+${FIELDS.map(([f,l,p])=>`<label>${l}</label><input id="${f}" placeholder="${p}">`).join('')}
+<label>Username</label><input id="un" autocapitalize="none" placeholder="letters, numbers,. or _">
+<label>Password</label><input id="pw" type="password" placeholder="at least 6 characters">
+<label>Confirm password</label><input id="pw2" type="password">
+<button class="btn full" id="go" onclick="reg()">Create account</button>
+<p class="meta" style="margin-top:1rem">Already have an account? <a href="#">Log in</a></p></div>`;
+const outView=()=>location.hash==='#register'?regView():loginView();
+async function boot(u){
+  if(registering)return;
+  unsubs.forEach(f=>f());unsubs=[];user=u;role=null;me=null;q='';subj='';
+  if(!u){app.innerHTML=outView();return}
+  if(ADMINS.indexOf((u.email||'').toLowerCase())>=0&&u.emailVerified)role='admin';
+  else if(ADMINS.indexOf((u.email||'').toLowerCase())>=0)role='admin';
+  else{try{const s=await db.doc('students/'+u.uid).get();if(s.exists){role='student';me=s.data()}}catch(e){toast(err(e))}}
+  if(!role){app.innerHTML=note('No account found','There is no student account for this login. Create an account first.',true);return}
+  const on=(ref,fn)=>unsubs.push(ref.onSnapshot(fn,e=>toast(err(e))));
+  ['handouts','announcements'].forEach(k=>on(db.collection(k).orderBy('created','desc'),s=>{D[k]=s.docs.map(d=>Object.assign({id:d.id},d.data()));paint()}));
+  on(db.doc('settings/site'),s=>{S=Object.assign({},S,s.data()||{});paint()});
+  if(role==='admin')on(db.collection('students'),s=>{D.students=s.docs.map(d=>Object.assign({id:d.id},d.data()));paint()});
+  shell();
 }
-function show(id){
-  document.getElementById('home').style.display=id=='home'?'block':'none';
-  document.getElementById('files').style.display=id=='files'?'block':'none';
-  document.getElementById('ann').style.display=id=='ann'?'block':'none';
-  if(id=='files') loadFiles();
+function shell(){
+  const head=`<div class="top"><div class="wrap"><h1 id="hname"></h1><div class="who">${role==='admin'?'Admin':'Hi, '+esc(me.username)}<button class="btn alt sm" onclick="logout()">Log out</button></div></div></div>`;
+  if(role==='admin'){app.innerHTML=head+`<div class="wrap"><div class="tabs" id="tabs"></div><div id="form"></div><div id="list"></div></div>`;adminView();return}
+  app.innerHTML=head+`<div class="wrap"><p id="wl"></p><h2>Announcements</h2><div id="ann"></div><h2 style="margin-top:1.5rem">Handouts</h2>
+  <div class="filters"><input placeholder="Search handouts" oninput="setQ(this.value)"><select id="sj" onchange="setSubj(this.value)"></select></div><div id="hl"></div></div>`;
+  paint();
 }
-
-function register(){
-  const e=email.value, p=password.value, m=matric.value, l=level.value;
-  if(!e||!p||!m||!l) return alert("Fill all fields: Email, Password, Matric, Level");
-  firebase.auth().createUserWithEmailAndPassword(e,p).then(cred=>{
-    return db.collection("users").doc(cred.user.uid).set({
-      email:e, matric:m, level:l, department:dept.value||'Software Engineering',
-      createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    });
-  }).then(()=>{alert("Account created! Now Login"); switchMode('login');}).catch(err=>alert(err.message));
+function adminView(){
+  $('#tabs').innerHTML=[['dashboard','Dashboard'],['handouts','Handouts'],['students','Students'],['announcements','Announcements'],['settings','Settings']].map(([k,l])=>`<button class="${tab===k?'on':''}" onclick="go('${k}')">${l}</button>`).join('');
+  if(tab==='dashboard')$('#form').innerHTML='';
+  else if(tab==='students')$('#form').innerHTML='<input placeholder="Search students" oninput="setQ(this.value)">';
+  else{
+    const e=tab==='settings'?S:(D[tab].find(x=>x.id===editing)||{});
+    $('#form').innerHTML=`<div class="card"><h3>${tab==='settings'?'Site settings':(editing?'Edit ':'Add ')+tab.slice(0,-1)}</h3>${F[tab].map(([f,l,t])=>`<label for="f_${f}">${l}</label>${t?`<textarea id="f_${f}" rows="4">${esc(e[f]||'')}</textarea>`:`<input id="f_${f}" value="${esc(e[f]||'')}">`}`).join('')}
+    <button class="btn" onclick="save('${tab}')">Save</button> ${editing?'<button class="btn alt" onclick="cancel()">Cancel</button>':''}</div>`;
+  }
+  paint();
 }
-function login(){
-  firebase.auth().signInWithEmailAndPassword(email.value,password.value)
-  .then(()=>{alert("Welcome!"); show('files');}).catch(e=>alert(e.message));
+function paint(){
+  if(!role||!$('#hname'))return;
+  $('#hname').textContent=S.name;
+  if(role==='admin'){
+    const L=$('#list');
+    if(tab==='dashboard')L.innerHTML=`<div class="stats"><div class="stat"><b>${D.handouts.length}</b>Handouts</div><div class="stat"><b>${D.students.length}</b>Students</div><div class="stat"><b>${D.announcements.length}</b>Announcements</div></div>
+    <div class="card"><h3>How it works</h3><p>Students create accounts with username. You add handouts with Google Drive links. Everything shows instantly.</p></div>`;
+    else if(tab==='settings')L.innerHTML='';
+    else if(tab==='students'){
+      const r=D.students.filter(s=>[s.username,s.ug,s.school,s.faculty,s.department,s.course,s.level].join(' ').toLowerCase().indexOf(q.toLowerCase())>=0);
+      L.innerHTML=`<h2>Registered students (${r.length})</h2>`+(r.length?r.map(s=>`<div class="card row"><div><b>${esc(s.username)}</b> · UG ${esc(s.ug)}<div class="meta">${esc(s.course)} · ${esc(s.department)}</div></div><button class="btn del sm" onclick="del('students','${esc(s.id)}')">Remove</button></div>`).join(''):'<div class="empty">No students found.</div>');
+    }else L.innerHTML=`<h2>All ${tab} (${D[tab].length})</h2>`+(D[tab].length?D[tab].map(x=>`<div class="card row"><div><b>${esc(x.title)}</b><div class="meta">${esc(tab==='handouts'?x.subject:x.date)}</div></div><div><button class="btn alt sm" onclick="edit('${esc(x.id)}')">Edit</button> <button class="btn del sm" onclick="del('${tab}','${esc(x.id)}')">Delete</button></div></div>`).join(''):'<div class="empty">Nothing here yet.</div>');
+    return;
+  }
+  $('#wl').textContent=S.welcome;
+  $('#ann').innerHTML=D.announcements.length?D.announcements.map(a=>`<div class="card"><h3>${esc(a.title)}</h3><div>${esc(a.body)}</div><div class="meta">${esc(a.date)}</div></div>`).join(''):'<div class="empty">No announcements yet.</div>';
+  const subs=[...new Set(D.handouts.map(h=>h.subject))].sort();
+  $('#sj').innerHTML='<option value="">All subjects</option>'+subs.map(x=>`<option ${x===subj?'selected':''}>${esc(x)}</option>`).join('');
+  const r=D.handouts.filter(h=>(!subj||h.subject===subj)&&(h.title+h.subject).toLowerCase().indexOf(q.toLowerCase())>=0);
+  $('#hl').innerHTML=r.length?r.map(h=>`<div class="card doc row"><div><h3 style="margin:0">${esc(h.title)}</h3><div class="meta">${esc(h.subject)} · ${esc(h.date)}</div></div><a class="btn sm" style="text-decoration:none" href="${esc(safeUrl(h.link))}" target="_blank" rel="noopener">Open</a></div>`).join(''):'<div class="empty">No handouts match your search.</div>';
 }
-function logout(){ firebase.auth().signOut().then(()=>location.reload()); }
-function loadFiles(){
-  if(!currentUser){ document.getElementById('filesList').innerHTML="Please login to see files"; return; }
-  db.collection("files").orderBy("createdAt","desc").get().then(snap=>{
-    if(snap.empty){ document.getElementById('filesList').innerHTML="No files yet - admin will upload soon"; return; }
-    let h=''; snap.forEach(d=>{let f=d.data(); h+=`<div class="file"><div><b>${f.title}</b><br><span class="badge">${f.fileName||'File'}</span></div><a href="${f.url}" target="_blank"><button style="width:auto;padding:6px 12px">Download</button></a></div>`;});
-    document.getElementById('filesList').innerHTML=h;
-  });
-}
-function loadAnns(){
-  db.collection("announcements").orderBy("createdAt","desc").limit(10).get().then(snap=>{
-    let h=''; snap.forEach(d=>{let a=d.data(); h+=`<div style="border-left:4px solid #1e40af;padding:8px;margin:8px 0;background:#f8fafc"><b>${a.title}</b><p style="margin:4px 0;font-size:14px">${a.message}</p></div>`;});
-    document.getElementById('annList').innerHTML=h||'No announcements yet';
-    document.getElementById('annAllList').innerHTML=h||'No announcements';
-  }).catch(()=>{document.getElementById('annList').innerHTML='Create Firestore Database in Firebase to see announcements';});
-}
+Object.assign(window,{
+  setQ:v=>{q=v;paint()},
+  setSubj:v=>{subj=v;paint()},
+  login:async()=>{const u=$('#un').value.trim().toLowerCase(),p=$('#pw').value;if(!u||!p)return toast('Enter username and password.');try{await auth.signInWithEmailAndPassword(u+DOMAIN,p)}catch(e){toast(err(e))}},
+  adminLogin:async()=>{try{await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())}catch(e){toast(err(e))}},
+  logout:()=>auth.signOut(),
+  reg:async()=>{
+    const p={};FIELDS.forEach(([f])=>p[f]=$('#'+f).value.trim());
+    const un=$('#un').value.trim().toLowerCase(),pw=$('#pw').value;
+    if(FIELDS.some(([f])=>!p[f])||!un||!pw)return toast('Fill in every box.');
+    if(!/^[a-z0-9._]{3,20}$/.test(un))return toast('Username: 3 to 20 letters, numbers, dots or underscores.');
+    if(pw.length<6)return toast('Password must be at least 6 characters.');
+    if(pw!==$('#pw2').value)return toast('The two passwords do not match.');
+    $('#go').disabled=true;registering=true;
+    try{
+      const c=await auth.createUserWithEmailAndPassword(un+DOMAIN,pw);
+      try{await db.doc('students/'+c.user.uid).set(Object.assign({},p,{username:un,created:TS()}))}
+      catch(e){await c.user.delete();throw e}
+      registering=false;location.hash='';boot(c.user);
+    }catch(e){registering=false;$('#go').disabled=false;toast(e.code==='auth/email-already-in-use'?'That username is taken.':err(e))}
+  },
+  go:t=>{tab=t;editing=null;q='';adminView()},
+  cancel:()=>{editing=null;adminView()},
+  edit:id=>{editing=id;adminView();scrollTo(0,0)},
+  del:async(k,id)=>{if(confirm('Remove?'))try{await db.doc(k+'/'+id).delete()}catch(e){toast(err(e))}},
+  save:async k=>{
+    const o={};F[k].forEach(([f])=>o[f]=$('#f_'+f).value.trim());
+    if(F[k].some(([f])=>!o[f]))return toast('Fill in every field.');
+    try{
+      if(k==='settings')await db.doc('settings/site').set(o);
+      else{
+        if(k==='handouts'&&!/^https?:\/\//i.test(o.link))return toast('Link must start with https://');
+        if(editing)await db.doc(k+'/'+editing).update(o);else await db.collection(k).add(Object.assign({},o,{date:today(),created:TS()}));
+      }
+      toast('Saved.');editing=null;if(k!=='settings')adminView();
+    }catch(e){toast(err(e))}
+  }
+});
+firebase.initializeApp(CONFIG);auth=firebase.auth();db=firebase.firestore();
+auth.onAuthStateChanged(boot);
+window.addEventListener('hashchange',()=>{if(!user&&!registering)app.innerHTML=outView()});
+})();
 </script>
 </body>
 </html>
