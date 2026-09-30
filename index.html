@@ -18,6 +18,9 @@ button{background:#1e40af;color:white;border:none;padding:11px 16px;border-radiu
 input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:8px}
 .file{background:#f8fafc;padding:10px;border-radius:8px;margin:8px 0;display:flex;justify-content:space-between;align-items:center}
 .badge{background:#dbeafe;color:#1e40af;padding:4px 8px;border-radius:12px;font-size:11px}
+.toggle{display:flex;background:#e2e8f0;border-radius:8px;padding:3px;margin-bottom:12px}
+.toggle button{margin:0;width:50%;background:transparent;color:#475569}
+.toggle button.active{background:white;color:#1e40af;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 </style>
 </head>
 <body>
@@ -31,16 +34,27 @@ input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:8
 
 <div id="authCard" class="card">
 <h3 id="welcomeMsg">Welcome! Login to access files</h3>
-<p id="status" style="font-size:13px;color:#64748b">Checking connection...</p>
+<p id="status" style="font-size:13px;color:#64748b">✅ Connected to NWU Firebase</p>
+
+<div class="toggle">
+<button id="loginTab" class="active" onclick="switchMode('login')">Login</button>
+<button id="regTab" onclick="switchMode('register')">Create Account</button>
+</div>
+
 <input id="email" type="email" placeholder="Email">
 <input id="password" type="password" placeholder="Password">
-<input id="matric" placeholder="Matric Number (for registration)">
+
+<div id="regFields" style="display:none">
+<input id="matric" placeholder="Matric Number e.g. NWU/SE/22/0001">
 <select id="level" style="width:100%;padding:11px;margin:6px 0;border-radius:8px;border:1px solid #ddd">
 <option value="">Select Level</option><option>100L</option><option>200L</option><option>300L</option><option>400L</option>
 </select>
-<button onclick="login()">Login</button>
-<button onclick="register()" style="background:#10b981">Create Account</button>
+<input id="dept" placeholder="Department (Software Engineering)">
+</div>
+
+<button id="mainBtn" onclick="login()">Login</button>
 <button onclick="logout()" id="logoutBtn" style="display:none;background:#ef4444">Logout</button>
+<p id="switchText" style="font-size:13px;text-align:center;color:#64748b">Don't have account? Click Create Account above</p>
 </div>
 
 <div id="home" class="card">
@@ -50,7 +64,6 @@ input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:8
 
 <div id="files" class="card" style="display:none">
 <h3>📚 Lecture Materials & Files</h3>
-<p style="font-size:13px;color:#64748b">All files uploaded by admin will appear here</p>
 <div id="filesList">Login to see files...</div>
 </div>
 
@@ -60,10 +73,9 @@ input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:8
 </div>
 
 <script>
-let db, auth, currentUser=null;
+let db, auth, currentUser=null, mode='login';
 setTimeout(()=>{
   db=firebase.firestore(); auth=firebase.auth();
-  document.getElementById('status').innerText="✅ Connected to NWU Firebase";
   auth.onAuthStateChanged(user=>{
     if(user){
       currentUser=user;
@@ -72,58 +84,58 @@ setTimeout(()=>{
       document.getElementById('logoutBtn').style.display='block';
       loadFiles(); loadAnns();
     } else {
-      document.getElementById('welcomeMsg').innerText="Welcome! Login to access";
       document.getElementById('logoutBtn').style.display='none';
     }
   });
   loadAnns();
-},1200);
+},1000);
 
+function switchMode(m){
+  mode=m;
+  document.getElementById('loginTab').classList.toggle('active', m=='login');
+  document.getElementById('regTab').classList.toggle('active', m=='register');
+  document.getElementById('regFields').style.display= m=='register'?'block':'none';
+  document.getElementById('mainBtn').innerText= m=='register'?'Create Account':'Login';
+  document.getElementById('mainBtn').onclick= m=='register'?register:login;
+  document.getElementById('mainBtn').style.background= m=='register'?'#10b981':'#1e40af';
+  document.getElementById('switchText').innerText= m=='register'?'Already have account? Click Login above':"Don't have account? Click Create Account above";
+}
 function show(id){
   document.getElementById('home').style.display=id=='home'?'block':'none';
   document.getElementById('files').style.display=id=='files'?'block':'none';
   document.getElementById('ann').style.display=id=='ann'?'block':'none';
   if(id=='files') loadFiles();
-  if(id=='ann'||id=='home') loadAnns();
 }
 
 function register(){
   const e=email.value, p=password.value, m=matric.value, l=level.value;
-  if(!e||!p||!m) return alert("Fill email, password, matric");
+  if(!e||!p||!m||!l) return alert("Fill all fields: Email, Password, Matric, Level");
   firebase.auth().createUserWithEmailAndPassword(e,p).then(cred=>{
     return db.collection("users").doc(cred.user.uid).set({
-      email:e, matric:m, level:l, createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      email:e, matric:m, level:l, department:dept.value||'Software Engineering',
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-  }).then(()=>alert("Account created! Now you can login and see files")).catch(err=>alert(err.message));
+  }).then(()=>{alert("Account created! Now Login"); switchMode('login');}).catch(err=>alert(err.message));
 }
 function login(){
   firebase.auth().signInWithEmailAndPassword(email.value,password.value)
   .then(()=>{alert("Welcome!"); show('files');}).catch(e=>alert(e.message));
 }
 function logout(){ firebase.auth().signOut().then(()=>location.reload()); }
-
 function loadFiles(){
   if(!currentUser){ document.getElementById('filesList').innerHTML="Please login to see files"; return; }
   db.collection("files").orderBy("createdAt","desc").get().then(snap=>{
-    if(snap.empty){ document.getElementById('filesList').innerHTML="No files uploaded yet by admin"; return; }
-    let h='';
-    snap.forEach(d=>{
-      let f=d.data();
-      h+=`<div class="file"><div><b>${f.title}</b><br><span class="badge">${f.fileName||'File'}</span></div><a href="${f.url}" target="_blank"><button style="width:auto;padding:6px 12px">Download</button></a></div>`;
-    });
+    if(snap.empty){ document.getElementById('filesList').innerHTML="No files yet - admin will upload soon"; return; }
+    let h=''; snap.forEach(d=>{let f=d.data(); h+=`<div class="file"><div><b>${f.title}</b><br><span class="badge">${f.fileName||'File'}</span></div><a href="${f.url}" target="_blank"><button style="width:auto;padding:6px 12px">Download</button></a></div>`;});
     document.getElementById('filesList').innerHTML=h;
   });
 }
 function loadAnns(){
   db.collection("announcements").orderBy("createdAt","desc").limit(10).get().then(snap=>{
-    let h='';
-    snap.forEach(d=>{
-      let a=d.data();
-      h+=`<div style="border-left:4px solid #1e40af;padding:8px;margin:8px 0;background:#f8fafc"><b>${a.title}</b><p style="margin:4px 0;font-size:14px">${a.message}</p><small style="color:#64748b">${a.createdAt?new Date(a.createdAt.seconds*1000).toLocaleDateString():''}</small></div>`;
-    });
+    let h=''; snap.forEach(d=>{let a=d.data(); h+=`<div style="border-left:4px solid #1e40af;padding:8px;margin:8px 0;background:#f8fafc"><b>${a.title}</b><p style="margin:4px 0;font-size:14px">${a.message}</p></div>`;});
     document.getElementById('annList').innerHTML=h||'No announcements yet';
     document.getElementById('annAllList').innerHTML=h||'No announcements';
-  });
+  }).catch(()=>{document.getElementById('annList').innerHTML='Create Firestore Database in Firebase to see announcements';});
 }
 </script>
 </body>
