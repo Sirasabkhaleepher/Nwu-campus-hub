@@ -1,13 +1,21 @@
-// STEP 1: paste your Firebase web app settings here (Firebase console > Project settings > Your apps)
-export const firebaseConfig = {
-  apiKey: "PASTE_API_KEY",
-  authDomain: "PASTE_AUTH_DOMAIN",
-  projectId: "PASTE_PROJECT_ID",
-  appId: "PASTE_APP_ID"
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDGeRhDoDdJzxpyuo7zHg0L50D1Cc6jNmg",
+  authDomain: "nwu-campus-hub.firebaseapp.com",
+  projectId: "nwu-campus-hub",
+  storageBucket: "nwu-campus-hub.firebasestorage.app",
+  messagingSenderId: "1085860624193",
+  appId: "1:1085860624193:web:368c85ba431d99ee2293c0",
+  measurementId: "G-Z0TG2PSNVN"
 };
 
-// STEP 2: your real Google email, in lowercase. This is the only admin.
-export const ADMINS = ["youradmin@gmail.com"];
-
-// Leave this alone. It lets students log in with a username instead of an email.
-export const DOMAIN = "@nwhub.example.com";
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
