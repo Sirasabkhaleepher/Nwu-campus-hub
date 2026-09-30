@@ -3,49 +3,42 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Northwest Campus Hub</title>
+<title>NWU Campus Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#10302f;--pine:#1d5c57;--mint:#e3efec;--chalk:#f8faf9;--gold:#e8a83a;--red:#b23a3a;--line:#cfdcd8}
+:root{--ink:#0b2e2b;--pine:#125149;--mint:#d8ebe7;--chalk:#f2f7f5;--gold:#f2b705;--line:#c7d8d3}
 *{box-sizing:border-box}
-body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--chalk);color:var(--ink)}
-h1,h2,h3{font-family:Georgia,'Times New Roman',serif;line-height:1.2;margin:0 0.5em}
-h1{font-size:2rem}h2{font-size:1.4rem}h3{font-size:1.1rem}
-a{color:var(--pine)}
-button,input,textarea,select{font:inherit;color:inherit}
-input,textarea,select{width:100%;padding:.65rem.75rem;border:1.5px solid var(--line);border-radius:6px;background:#fff;margin:.25rem 0.9rem}
-input:focus,textarea:focus,select:focus,button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
-label{font-weight:600;font-size:.9rem}
-.btn{background:var(--pine);color:#fff;border:0;border-radius:6px;padding:.65rem 1.1rem;cursor:pointer;font-weight:600}
-.btn:hover{background:var(--ink)}
-.btn.alt{background:#fff;color:var(--pine);border:1.5px solid var(--pine)}
-.btn.del{background:#fff;color:var(--red);border:1.5px solid var(--red)}
-.btn.sm{padding:.35rem.7rem;font-size:.85rem}
-.btn.full{width:100%}
+body{margin:0;font:16px/1.5 'Inter',sans-serif;background:radial-gradient(1000px 600px at 10% 0%, #e8f3f0 0%, var(--chalk) 60%);color:var(--ink);min-height:100vh}
+h1{font-family:'Outfit',sans-serif;font-size:2.2rem;line-height:1.1;margin:0 0.4em;color:var(--ink)}
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:1.2rem;background:linear-gradient(180deg,var(--ink) 0%, var(--ink) 38%, var(--mint) 38%, var(--chalk) 100%)}
+.login{width:100%;max-width:420px;background:#fff;border-radius:22px;padding:1.8rem 1.6rem 1.4rem;box-shadow:0 20px 60px rgba(11,46,43,.18);border:1.5px solid #dbe8e4;position:relative;overflow:hidden}
+.login:before{content:"";position:absolute;top:0;left:0;right:0;height:7px;background:linear-gradient(90deg,var(--pine),var(--gold))}
+.badge{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--pine),#0e3f39);color:#fff;display:grid;place-items:center;font:800 1.4rem 'Outfit';margin-bottom:1rem;box-shadow:0 8px 20px rgba(18,81,73,.35)}
+.meta{color:#5a7e78;font-size:.92rem;margin:.2rem 0 1rem}
+label{font-weight:700;font-size:.88rem;color:var(--ink);display:block;margin-top:.8rem}
+input{width:100%;padding:.85rem 1rem;border-radius:14px;border:1.8px solid var(--line);background:#f8fbf9;margin:.35rem 0.9rem;font-size:1rem;transition:.2s}
+input:focus{outline:none;border-color:var(--pine);background:#fff;box-shadow:0 0 0 4px rgba(18,81,73,.15)}
+.btn{background:linear-gradient(135deg,var(--pine),var(--ink));color:#fff;border:0;border-radius:14px;padding:.9rem 1.2rem;width:100%;font-weight:800;cursor:pointer;box-shadow:0 10px 24px rgba(11,46,43,.22);transition:.2s;margin-top:.4rem}
+.btn:hover{transform:translateY(-1px)}
+.btn.alt{background:#fff;color:var(--pine);border:2px solid var(--pine);box-shadow:none}
+.or{text-align:center;color:#6b8a85;font-size:.85rem;margin:1.1rem 0;position:relative}
+.or:before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line)}
+.or span{background:#fff;padding:0.8rem;position:relative}
+a{color:var(--pine);font-weight:600}
+.top{background:var(--ink);color:#fff;padding:1rem;position:sticky;top:0;z-index:5}
 .wrap{max-width:900px;margin:0 auto;padding:1rem}
-.top{background:var(--ink);color:#fff}
-.top.wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
-.top h1{font-size:1.25rem;margin:0}
-.who{display:flex;align-items:center;gap:.75rem;font-size:.9rem}
-.login{max-width:420px;margin:5vh auto;padding:1.5rem;background:#fff;border:1.5px solid var(--line);border-radius:10px}
-.or{text-align:center;color:#4b6663;font-size:.85rem;margin:1rem 0}
-.tabs{display:flex;gap:.4rem;overflow-x:auto;padding:.75rem 0;border-bottom:2px solid var(--line);margin-bottom:1rem}
-.tabs button{background:none;border:0;padding:.5rem.9rem;border-radius:6px;cursor:pointer;font-weight:600;white-space:nowrap}
-.tabs button.on{background:var(--mint);color:var(--pine)}
-.card{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:1rem;margin-bottom:.8rem}
+.tabs{display:flex;gap:.4rem;overflow-x:auto;padding:.7rem 0;border-bottom:2px solid var(--line);margin-bottom:1rem}
+.tabs button{border:1.5px solid var(--line);background:#fff;padding:.5rem 1rem;border-radius:999px;font-weight:700;cursor:pointer;white-space:nowrap}
+.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:1rem;margin-bottom:.8rem;box-shadow:0 6px 20px rgba(0,0,0,.04)}
 .doc{border-left:6px solid var(--gold)}
-.row{display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap}
-.meta{font-size:.85rem;color:#4b6663}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.8rem;margin-bottom:1rem}
-.stat{background:var(--mint);border-radius:8px;padding:1rem}
-.stat b{display:block;font:700 2rem Georgia,serif}
-.filters{display:grid;grid-template-columns:2fr 1fr;gap:.6rem}
-.empty{padding:1.5rem;text-align:center;color:#4b6663;border:1.5px dashed var(--line);border-radius:8px}
-#toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:.6rem 1rem;border-radius:6px;display:none;z-index:9;max-width:90%}
+.row{display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;align-items:center}
+#toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:.7rem 1rem;border-radius:999px;display:none;z-index:9}
 </style>
 </head>
 <body>
-<div id="app"><div class="login"><h1>Northwest Campus Hub</h1><p>Loading...</p></div></div>
-<div id="toast" role="status"></div>
+<div id="app"><div class="login-wrap"><div class="login"><div class="badge">N</div><h1>Northwest Campus Hub</h1><p class="meta">Loading...</p></div></div></div>
+<div id="toast"></div>
 
 <script>
 var CONFIG={
@@ -68,37 +61,24 @@ const safeUrl=u=>/^https?:\/\//i.test(u)?u:'#';
 const today=()=>new Date().toISOString().slice(0,10);
 const app=$('#app');
 const toast=m=>{if(!m)return;const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',3500)};
-const ERR={'auth/invalid-credential':'Wrong username or password.','auth/wrong-password':'Wrong username or password.','auth/user-not-found':'Wrong username or password.','auth/too-many-requests':'Too many tries. Wait a few minutes.','auth/popup-closed-by-user':'','auth/cancelled-popup-request':'','auth/unauthorized-domain':'Add this website address to Authorized domains in Firebase.','permission-denied':'Not allowed. Check your Firestore rules.'};
+const ERR={'auth/invalid-credential':'Wrong username or password.','auth/wrong-password':'Wrong username or password.','auth/user-not-found':'Wrong username or password.','auth/too-many-requests':'Too many tries.','auth/popup-closed-by-user':'','auth/cancelled-popup-request':'','auth/unauthorized-domain':'Add domain to Firebase.','permission-denied':'Check Firestore rules.'};
 const err=e=>ERR[e.code]!==undefined?ERR[e.code]:e.message;
 const DOMAIN='@nwhub.example.com';
 const TS=()=>firebase.firestore.FieldValue.serverTimestamp();
-const FIELDS=[['school','School','e.g. Northwest University'],['faculty','Faculty','e.g. Science'],['department','Department',''],['course','Course',''],['level','Level','e.g. 200 level'],['ug','UG number','']];
+const FIELDS=[['school','School','Northwest University'],['faculty','Faculty','Computing'],['department','Department','Software Engineering'],['course','Course',''],['level','Level','200 level'],['ug','UG number','']];
 const F={handouts:[['title','Title'],['subject','Subject'],['link','Google Drive link']],announcements:[['title','Title'],['body','Message','area']],settings:[['name','Site name'],['welcome','Welcome message','area']]};
 let auth,db,user=null,role,me,registering=false,editing=null,tab='dashboard',q='',subj='',unsubs=[];
 let D={handouts:[],announcements:[],students:[]},S={name:'Northwest Campus Hub',welcome:'Find your handouts and campus news here.'};
-const note=(t,b,out)=>`<div class="login"><h1>${t}</h1><p>${b}</p>${out?'<button class="btn full" onclick="logout()">Log out</button>':''}</div>`;
-const loginView=()=>`<div class="login"><h1>${esc(S.name)}</h1><p class="meta">Log in with your username and password.</p>
-<label>Username</label><input id="un" autocomplete="username" autocapitalize="none">
-<label>Password</label><input id="pw" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
-<button class="btn full" onclick="login()">Log in</button>
-<p class="meta" style="margin-top:1rem">New here? <a href="#register">Create an account</a></p>
-<div class="or">Admin?</div><button class="btn alt full" onclick="adminLogin()">Sign in with Google</button></div>`;
-const regView=()=>`<div class="login"><h1>Create your account</h1><p class="meta">Fill in every box.</p>
-${FIELDS.map(([f,l,p])=>`<label>${l}</label><input id="${f}" placeholder="${p}">`).join('')}
-<label>Username</label><input id="un" autocapitalize="none" placeholder="letters, numbers,. or _">
-<label>Password</label><input id="pw" type="password" placeholder="at least 6 characters">
-<label>Confirm password</label><input id="pw2" type="password">
-<button class="btn full" id="go" onclick="reg()">Create account</button>
-<p class="meta" style="margin-top:1rem">Already have an account? <a href="#">Log in</a></p></div>`;
+const loginView=()=>`<div class="login-wrap"><div class="login"><div class="badge">N</div><h1>Northwest<br>Campus Hub</h1><p class="meta">Log in with your username and password.</p><label>Username</label><input id="un" autocomplete="username" placeholder="e.g. khaleepha"><label>Password</label><input id="pw" type="password" onkeydown="if(event.key==='Enter')login()" placeholder="••••••••"><button class="btn" onclick="login()">Log in</button><p class="meta" style="margin-top:1rem">New here? <a href="#register">Create an account</a></p><div class="or"><span>Admin?</span></div><button class="btn alt" onclick="adminLogin()">Sign in with Google</button></div></div>`;
+const regView=()=>`<div class="login-wrap"><div class="login"><div class="badge">N</div><h1>Create account</h1><p class="meta">Fill every box.</p>${FIELDS.map(([f,l,p])=>`<label>${l}</label><input id="${f}" placeholder="${p}">`).join('')}<label>Username</label><input id="un" placeholder="letters, numbers,. _"><label>Password</label><input id="pw" type="password" placeholder="min 6 chars"><label>Confirm password</label><input id="pw2" type="password"><button class="btn" id="go" onclick="reg()">Create account</button><p class="meta" style="margin-top:1rem"><a href="#">Back to login</a></p></div></div>`;
 const outView=()=>location.hash==='#register'?regView():loginView();
 async function boot(u){
   if(registering)return;
-  unsubs.forEach(f=>f());unsubs=[];user=u;role=null;me=null;q='';subj='';
+  unsubs.forEach(f=>f());unsubs=[];user=u;role=null;me=null;
   if(!u){app.innerHTML=outView();return}
-  if(ADMINS.indexOf((u.email||'').toLowerCase())>=0&&u.emailVerified)role='admin';
-  else if(ADMINS.indexOf((u.email||'').toLowerCase())>=0)role='admin';
+  if(ADMINS.indexOf((u.email||'').toLowerCase())>=0)role='admin';
   else{try{const s=await db.doc('students/'+u.uid).get();if(s.exists){role='student';me=s.data()}}catch(e){toast(err(e))}}
-  if(!role){app.innerHTML=note('No account found','There is no student account for this login. Create an account first.',true);return}
+  if(!role){app.innerHTML=`<div class="login-wrap"><div class="login"><h1>No account found</h1><p>No student for this login.</p><button class="btn" onclick="logout()">Log out</button></div></div>`;return}
   const on=(ref,fn)=>unsubs.push(ref.onSnapshot(fn,e=>toast(err(e))));
   ['handouts','announcements'].forEach(k=>on(db.collection(k).orderBy('created','desc'),s=>{D[k]=s.docs.map(d=>Object.assign({id:d.id},d.data()));paint()}));
   on(db.doc('settings/site'),s=>{S=Object.assign({},S,s.data()||{});paint()});
@@ -106,10 +86,9 @@ async function boot(u){
   shell();
 }
 function shell(){
-  const head=`<div class="top"><div class="wrap"><h1 id="hname"></h1><div class="who">${role==='admin'?'Admin':'Hi, '+esc(me.username)}<button class="btn alt sm" onclick="logout()">Log out</button></div></div></div>`;
+  const head=`<div class="top"><div class="wrap" style="display:flex;justify-content:space-between;align-items:center"><h1 style="font-size:1.25rem;margin:0" id="hname"></h1><div>${role==='admin'?'Admin':'Hi, '+esc(me.username)} <button class="btn alt" style="width:auto;padding:.3rem.8rem;margin-left:.6rem" onclick="logout()">Logout</button></div></div></div>`;
   if(role==='admin'){app.innerHTML=head+`<div class="wrap"><div class="tabs" id="tabs"></div><div id="form"></div><div id="list"></div></div>`;adminView();return}
-  app.innerHTML=head+`<div class="wrap"><p id="wl"></p><h2>Announcements</h2><div id="ann"></div><h2 style="margin-top:1.5rem">Handouts</h2>
-  <div class="filters"><input placeholder="Search handouts" oninput="setQ(this.value)"><select id="sj" onchange="setSubj(this.value)"></select></div><div id="hl"></div></div>`;
+  app.innerHTML=head+`<div class="wrap"><p class="meta" id="wl"></p><h2>Announcements</h2><div id="ann"></div><h2 style="margin-top:1.5rem">Handouts</h2><div style="display:flex;gap:.6rem;margin:.6rem 0"><input placeholder="Search" oninput="setQ(this.value)" style="margin:0"><select id="sj" onchange="setSubj(this.value)" style="margin:0;max-width:160px"></select></div><div id="hl"></div></div>`;
   paint();
 }
 function adminView(){
@@ -118,8 +97,7 @@ function adminView(){
   else if(tab==='students')$('#form').innerHTML='<input placeholder="Search students" oninput="setQ(this.value)">';
   else{
     const e=tab==='settings'?S:(D[tab].find(x=>x.id===editing)||{});
-    $('#form').innerHTML=`<div class="card"><h3>${tab==='settings'?'Site settings':(editing?'Edit ':'Add ')+tab.slice(0,-1)}</h3>${F[tab].map(([f,l,t])=>`<label for="f_${f}">${l}</label>${t?`<textarea id="f_${f}" rows="4">${esc(e[f]||'')}</textarea>`:`<input id="f_${f}" value="${esc(e[f]||'')}">`}`).join('')}
-    <button class="btn" onclick="save('${tab}')">Save</button> ${editing?'<button class="btn alt" onclick="cancel()">Cancel</button>':''}</div>`;
+    $('#form').innerHTML=`<div class="card"><h3>${editing?'Edit':'Add'} ${tab}</h3>${F[tab].map(([f,l,t])=>`<label>${l}</label>${t?`<textarea id="f_${f}" rows="4">${esc(e[f]||'')}</textarea>`:`<input id="f_${f}" value="${esc(e[f]||'')}">`}`).join('')}<button class="btn" onclick="save('${tab}')">Save</button> ${editing?'<button class="btn alt" style="margin-top:.6rem" onclick="cancel()">Cancel</button>':''}</div>`;
   }
   paint();
 }
@@ -128,8 +106,57 @@ function paint(){
   $('#hname').textContent=S.name;
   if(role==='admin'){
     const L=$('#list');
-    if(tab==='dashboard')L.innerHTML=`<div class="stats"><div class="stat"><b>${D.handouts.length}</b>Handouts</div><div class="stat"><b>${D.students.length}</b>Students</div><div class="stat"><b>${D.announcements.length}</b>Announcements</div></div>
-    <div class="card"><h3>How it works</h3><p>Students create accounts with username. You add handouts with Google Drive links. Everything shows instantly.</p></div>`;
+    if(tab==='dashboard')L.innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem"><div class="card"><b style="font-size:1.8rem">${D.handouts.length}</b><div class="meta">Handouts</div></div><div class="card"><b style="font-size:1.8rem">${D.students.length}</b><div class="meta">Students</div></div><div class="card"><b style="font-size:1.8rem">${D.announcements.length}</b><div class="meta">Announcements</div></div></div>`;
+    else if(tab==='settings')L.innerHTML='';
+    else if(tab==='students'){
+      const r=D.students.filter(s=>[s.username,s.ug,s.course].join(' ').toLowerCase().includes(q.toLowerCase()));
+      L.innerHTML=r.map(s=>`<div class="card row"><div><b>${esc(s.username)}</b> - ${esc(s.ug)}<div class="meta">${esc(s.course)}</div></div><button class="btn alt" style="width:auto" onclick="del('students','${esc(s.id)}')">Delete</button></div>`).join('')||'<div class="card">No students</div>';
+    }else L.innerHTML=D[tab].map(x=>`<div class="card row"><div><b>${esc(x.title)}</b><div class="meta">${esc(x.subject||x.date)}</div></div><div><button class="btn alt" style="width:auto" onclick="edit('${esc(x.id)}')">Edit</button> <button class="btn alt" style="width:auto;margin-left:.4rem" onclick="del('${tab}','${esc(x.id)}')">Del</button></div></div>`).join('')||'<div class="card">Nothing yet</div>';
+    return;
+  }
+  $('#wl').textContent=S.welcome;
+  $('#ann').innerHTML=D.announcements.map(a=>`<div class="card"><b>${esc(a.title)}</b><div>${esc(a.body)}</div><div class="meta">${esc(a.date)}</div></div>`).join('')||'<div class="card">No announcements</div>';
+  const subs=[...new Set(D.handouts.map(h=>h.subject))].sort();
+  $('#sj').innerHTML='<option value="">All</option>'+subs.map(x=>`<option ${x===subj?'selected':''}>${esc(x)}</option>`).join('');
+  const r=D.handouts.filter(h=>(!subj||h.subject===subj)&&(h.title+h.subject).toLowerCase().includes(q.toLowerCase()));
+  $('#hl').innerHTML=r.map(h=>`<div class="card doc row"><div><b>${esc(h.title)}</b><div class="meta">${esc(h.subject)} · ${esc(h.date)}</div></div><a class="btn" style="width:auto;text-decoration:none;padding:.5rem 1rem" href="${esc(safeUrl(h.link))}" target="_blank">Open</a></div>`).join('')||'<div class="card">No handouts</div>';
+}
+Object.assign(window,{
+  setQ:v=>{q=v;paint()},setSubj:v=>{subj=v;paint()},
+  login:async()=>{const u=$('#un').value.trim().toLowerCase(),p=$('#pw').value;if(!u||!p)return toast('Enter username & password');try{await auth.signInWithEmailAndPassword(u+DOMAIN,p)}catch(e){toast(err(e))}},
+  adminLogin:async()=>{try{await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())}catch(e){toast(err(e))}},
+  logout:()=>auth.signOut(),
+  reg:async()=>{
+    const p={};FIELDS.forEach(([f])=>p[f]=$('#'+f).value.trim());
+    const un=$('#un').value.trim().toLowerCase(),pw=$('#pw').value;
+    if(FIELDS.some(([f])=>!p[f])||!un||!pw)return toast('Fill every box');
+    if(pw!==$('#pw2').value)return toast('Passwords not match');
+    $('#go').disabled=true;registering=true;
+    try{
+      const c=await auth.createUserWithEmailAndPassword(un+DOMAIN,pw);
+      await db.doc('students/'+c.user.uid).set(Object.assign({},p,{username:un,created:TS()}));
+      registering=false;location.hash='';boot(c.user);
+    }catch(e){registering=false;$('#go').disabled=false;toast(e.code==='auth/email-already-in-use'?'Username taken':err(e))}
+  },
+  go:t=>{tab=t;editing=null;adminView()},cancel:()=>{editing=null;adminView()},edit:id=>{editing=id;adminView()},
+  del:async(k,id)=>{if(confirm('Delete?'))await db.doc(k+'/'+id).delete()},
+  save:async k=>{
+    const o={};F[k].forEach(([f])=>o[f]=$('#f_'+f).value.trim());
+    if(F[k].some(([f])=>!o[f]))return toast('Fill every field');
+    try{
+      if(k==='settings')await db.doc('settings/site').set(o);
+      else{if(k==='handouts'&&!/^https?:\/\//i.test(o.link))return toast('Link must start https://');if(editing)await db.doc(k+'/'+editing).update(o);else await db.collection(k).add(Object.assign({},o,{date:today(),created:TS()}));}
+      toast('Saved');editing=null;adminView();
+    }catch(e){toast(err(e))}
+  }
+});
+firebase.initializeApp(CONFIG);auth=firebase.auth();db=firebase.firestore();
+auth.onAuthStateChanged(boot);
+window.addEventListener('hashchange',()=>{if(!user&&!registering)app.innerHTML=outView()});
+})();
+</script>
+</body>
+</html>><p>Students create accounts with username. You add handouts with Google Drive links. Everything shows instantly.</p></div>`;
     else if(tab==='settings')L.innerHTML='';
     else if(tab==='students'){
       const r=D.students.filter(s=>[s.username,s.ug,s.school,s.faculty,s.department,s.course,s.level].join(' ').toLowerCase().indexOf(q.toLowerCase())>=0);
