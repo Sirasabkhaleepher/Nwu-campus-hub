@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - NWU</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+<script src="firebase-config.js"></script>
+<style>
+body{font-family:Arial;margin:0;background:#f1f5f9}
+header{background:#0f172a;color:white;padding:15px;text-align:center}
+.stats{display:flex;gap:10px;padding:15px;flex-wrap:wrap}
+.stat{flex:1;min-width:120px;background:white;padding:15px;border-radius:10px;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,.1)}
+.stat h2{margin:0;color:#1e40af}
+.card{background:white;margin:15px;padding:15px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,.1)}
+button{background:#1e40af;color:white;border:none;padding:10px 15px;border-radius:6px;margin:3px;cursor:pointer}
+input,textarea{width:100%;padding:10px;margin:6px 0;border:1px solid #ddd;border-radius:6px;box-sizing:border-box}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ddd;padding:8px;font-size:13px}
+th{background:#1e40af;color:white}
+</style>
+</head>
+<body>
+<header><h2>🔐 NWU ADMIN DASHBOARD</h2><p>Only you can see this page</p></header>
+
+<div id="loginCard" class="card">
+<h3>Admin Login</h3>
+<input id="email" placeholder="Your admin email">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="msg"></p>
+</div>
+
+<div id="dash" style="display:none">
+<div class="stats">
+<div class="stat"><h2 id="totalUsers">0</h2><p>Total Students</p></div>
+<div class="stat"><h2 id="totalFiles">0</h2><p>Total Files</p></div>
+<div class="stat"><h2 id="totalAnn">0</h2><p>Announcements</p></div>
+</div>
+
+<div class="card">
+<h3>📤 Upload File For Students</h3>
+<input id="fileTitle" placeholder="File Title e.g. CSC201 Lecture 1">
+<input type="file" id="fileInput">
+<button onclick="uploadFile()" style="background:#10b981">Upload File</button>
+<p id="uploadStatus"></p>
+<h4>Uploaded Files</h4>
+<div id="filesList"></div>
+</div>
+
+<div class="card">
+<h3>👥 Registered Students List</h3>
+<button onclick="loadUsers()">Refresh</button>
+<table><thead><tr><th>Email</th><th>Matric No</th><th>Level</th><th>Joined</th></tr></thead><tbody id="users"></tbody></table>
+</div>
+
+<div class="card">
+<h3>📢 Post Announcement</h3>
+<input id="annTitle" placeholder="Title">
+<textarea id="annMsg" placeholder="Message to all students"></textarea>
+<button onclick="postAnn()">Post</button>
+</div>
+
+<button onclick="logout()" style="margin:15px;background:#ef4444;width:90%">Logout</button>
+</div>
+
+<script>
+let db, auth, storage;
+setTimeout(()=>{
+ db=firebase.firestore(); auth=firebase.auth(); storage=firebase.storage();
+ auth.onAuthStateChanged(u=>{
+  if(u){
+   document.getElementById('loginCard').style.display='none';
+   document.getElementById('dash').style.display='block';
+   document.getElementById('msg').innerText='Logged in as '+u.email;
+   loadAll();
+  }
+ });
+},1000);
+
+function login(){
+ firebase.auth().signInWithEmailAndPassword(email.value, pass.value)
+.then(()=>{location.reload()})
+.catch(e=>alert(e.message));
+}
+function logout(){ firebase.auth().signOut().then(()=>location.reload()); }
+
+function loadAll(){ loadUsers(); loadFiles(); loadStats(); }
+function loadStats(){
+ db.collection("users").get().then(s=>{document.getElementById('totalUsers').innerText=s.size});
+ db.collection("files").get().then(s=>{document.getElementById('totalFiles').innerText=s.size});
+ db.collection("announcements").get().then(s=>{document.getElementById('totalAnn').innerText=s.size});
+}
+function loadUsers(){
+ db.collection("users").get().then(snap=>{
+  let h='';
+  snap.forEach(d=>{
+   let data=d.data();
+   h+=`<tr><td>${data.email||''}</td><td>${data.matric||''}</td><td>${data.level||''}</td><td>${data.createdAt?new Date(data.createdAt.seconds*1000).toLocaleDateString():''}</td></tr>`;
+  });
+  document.getElementById('users').innerHTML=h||'<tr><td colspan=4>No students yet</td></tr>';
+ });
+}
+function uploadFile(){
+ let file=document.getElementById('fileInput').files[0];
+ let title=document.getElementById('fileTitle').value;
+ if(!file||!title) return alert("Select file and title");
+ document.getElementById('uploadStatus').innerText="Uploading...";
+ let ref=storage.ref('student_files/'+Date.now()+'_'+file.name);
+ ref.put(file).then(()=>ref.getDownloadURL()).then(url=>{
+  return db.collection("files").add({title:title,url:url,fileName:file.name,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+ }).then(()=>{document.getElementById('uploadStatus').innerText="✅ Uploaded!"; loadFiles(); loadStats();}).catch(e=>alert(e.message));
+}
+function loadFiles(){
+ db.collection("files").orderBy("createdAt","desc").get().then(s=>{
+  let h='';
+  s.forEach(d=>{let f=d.data(); h+=`<p>📄 <b>${f.title}</b> - <a href="${f.url}" target="_blank">Download</a> <button onclick="delFile('${d.id}')" style="background:#ef4444;padding:3px 6px">Delete</button></p>`});
+  document.getElementById('filesList').innerHTML=h||'No files';
+ });
+}
+function delFile(id){ if(confirm("Delete?")) db.collection("files").doc(id).delete().then(()=>loadFiles()); }
+function postAnn(){
+ let t=annTitle.value, m=annMsg.value;
+ if(!t||!m) return alert("Fill both");
+ db.collection("announcements").add({title:t,message:m,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(()=>{alert("Posted"); annTitle.value=''; annMsg.value=''; loadStats();});
+}
+</script>
+</body>
+  </html>
