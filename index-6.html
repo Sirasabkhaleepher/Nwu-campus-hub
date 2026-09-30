@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Northwest Campus Hub</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" role="status"></div>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,signInWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,collection,doc,getDoc,setDoc,addDoc,updateDoc,deleteDoc,onSnapshot,query,orderBy,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {firebaseConfig,ADMINS,DOMAIN} from "./firebase-config.js";
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl=u=>/^https?:\/\//i.test(u)?u:'#';
+const today=()=>new Date().toISOString().slice(0,10);
+const app=$('#app');
+const toast=m=>{if(!m)return;const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',3500)};
+const ERR={'auth/invalid-credential':'Wrong username or password.','auth/wrong-password':'Wrong username or password.','auth/user-not-found':'Wrong username or password.','auth/too-many-requests':'Too many tries. Wait a few minutes.','auth/popup-closed-by-user':'','auth/cancelled-popup-request':'','auth/unauthorized-domain':'Add this website address to Authorized domains in Firebase.','permission-denied':'Not allowed. Check your Firestore rules.'};
+const err=e=>ERR[e.code]??e.message;
+
+let auth,db,role,me,editing=null,tab='dashboard',q='',subj='',unsubs=[];
+let D={handouts:[],announcements:[],students:[]},S={name:'Northwest Campus Hub',welcome:'Find your handouts and campus news here.'};
+
+const loginView=()=>`<div class="login"><h1>${esc(S.name)}</h1><p class="meta">Log in with your username and password.</p>
+<label for="un">Username</label><input id="un" autocomplete="username" autocapitalize="none">
+<label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+<button class="btn full" onclick="login()">Log in</button>
+<p class="meta" style="margin-top:1rem">New here? <a href="register.html">Create an account</a></p>
+<div class="or">Admin?</div><button class="btn alt full" onclick="adminLogin()">Sign in with Google</button></div>`;
+const noteView=(t,body)=>`<div class="login"><h1>${t}</h1><p>${body}</p><button class="btn full" onclick="logout()">Log out</button></div>`;
+
+if(firebaseConfig.apiKey.startsWith('PASTE')){
+  app.innerHTML='<div class="login"><h1>Almost ready</h1><p>Paste your Firebase settings into <b>firebase-config.js</b> first.</p></div>';
+}else{
+  auth=getAuth(initializeApp(firebaseConfig));db=getFirestore();
+  onAuthStateChanged(auth,boot);
+}
+
+async function boot(u){
+  unsubs.forEach(f=>f());unsubs=[];role=null;me=null;q='';subj='';
+  if(!u)return app.innerHTML=loginView();
+  if(ADMINS.includes((u.email||'').toLowerCase())&&u.emailVerified)role='admin';
+  else{try{const s=await getDoc(doc(db,'students',u.uid));if(s.exists()){role='student';me=s.data()}}catch(e){toast(err(e))}}
+  if(!role)return app.innerHTML=noteView('No account found','There is no student account for this login. Students should log in with their username, or create an account first.');
+  const on=(ref,fn)=>unsubs.push(onSnapshot(ref,fn,e=>toast(err(e))));
+  ['handouts','announcements'].forEach(k=>on(query(collection(db,k),orderBy('created','desc')),s=>{D[k]=s.docs.map(d=>({id:d.id,...d.data()}));paint()}));
+  on(doc(db,'settings','site'),s=>{S={...S,...(s.data()||{})};paint()});
+  if(role==='admin')on(collection(db,'students'),s=>{D.students=s.docs.map(d=>({id:d.id,...d.data()}));paint()});
+  shell();
+}
+
+function shell(){
+  const head=`<div class="top"><div class="wrap"><h1 id="hname"></h1><div class="who">${role==='admin'?'Admin':'Hi, '+esc(me.username)}<button class="btn alt sm" onclick="logout()">Log out</button></div></div></div>`;
+  if(role==='admin'){
+    app.innerHTML=head+`<div class="wrap"><div class="tabs" id="tabs"></div><div id="form"></div><div id="list"></div></div>`;
+    return adminView();
+  }
+  app.innerHTML=head+`<div class="wrap"><p id="wl"></p><h2>Announcements</h2><div id="ann"></div><h2 style="margin-top:1.5rem">Handouts</h2>
+  <div class="filters"><input placeholder="Search handouts" oninput="setQ(this.value)"><select id="sj" onchange="setSubj(this.value)"></select></div><div id="hl"></div></div>`;
+  paint();
+}
+
+const F={handouts:[['title','Title'],['subject','Subject'],['link','Google Drive link']],announcements:[['title','Title'],['body','Message','area']],settings:[['name','Site name'],['welcome','Welcome message','area']]};
+function adminView(){
+  $('#tabs').innerHTML=[['dashboard','Dashboard'],['handouts','Handouts'],['students','Students'],['announcements','Announcements'],['settings','Settings']].map(([k,l])=>`<button class="${tab===k?'on':''}" onclick="go('${k}')">${l}</button>`).join('');
+  if(tab==='dashboard')$('#form').innerHTML='';
+  else if(tab==='students')$('#form').innerHTML='<input placeholder="Search students (name, UG number, course...)" oninput="setQ(this.value)">';
+  else{
+    const e=tab==='settings'?S:(D[tab].find(x=>x.id===editing)||{});
+    $('#form').innerHTML=`<div class="card"><h3>${tab==='settings'?'Site settings':(editing?'Edit ':'Add ')+tab.slice(0,-1)}</h3>${F[tab].map(([f,l,t])=>`<label for="f_${f}">${l}</label>${t?`<textarea id="f_${f}" rows="4">${esc(e[f]||'')}</textarea>`:`<input id="f_${f}" value="${esc(e[f]||'')}">`}`).join('')}
+    <button class="btn" onclick="save('${tab}')">Save</button> ${editing?'<button class="btn alt" onclick="cancel()">Cancel</button>':''}</div>`;
+  }
+  paint();
+}
+
+function paint(){
+  if(!role)return;
+  $('#hname').textContent=S.name;
+  if(role==='admin'){
+    if(tab==='dashboard')$('#list').innerHTML=`<div class="stats"><div class="stat"><b>${D.handouts.length}</b>Handouts</div><div class="stat"><b>${D.students.length}</b>Students</div><div class="stat"><b>${D.announcements.length}</b>Announcements</div></div>
+    <div class="card"><h3>How it works</h3><p>Students create their own accounts on the <b>register.html</b> page. Share that page's link with them. Everything you save here shows up for students right away.</p></div>`;
+    else if(tab==='settings')$('#list').innerHTML='';
+    else if(tab==='students'){
+      const r=D.students.filter(s=>[s.username,s.ug,s.school,s.faculty,s.department,s.course,s.level].join(' ').toLowerCase().includes(q.toLowerCase()));
+      $('#list').innerHTML=`<h2>Registered students (${r.length})</h2>`+(r.length?r.map(s=>`<div class="card row"><div><b>${esc(s.username)}</b> · UG ${esc(s.ug)}<div class="meta">${esc(s.course)} · ${esc(s.department)} · ${esc(s.faculty)} · ${esc(s.school)} · ${esc(s.level)}</div></div><button class="btn del sm" onclick="del('students','${esc(s.id)}')">Remove</button></div>`).join(''):'<div class="empty">No students found.</div>');
+    }else $('#list').innerHTML=`<h2>All ${tab} (${D[tab].length})</h2>`+(D[tab].length?D[tab].map(x=>`<div class="card row"><div><b>${esc(x.title)}</b><div class="meta">${esc(tab==='handouts'?x.subject:x.date)}</div></div><div><button class="btn alt sm" onclick="edit('${esc(x.id)}')">Edit</button> <button class="btn del sm" onclick="del('${tab}','${esc(x.id)}')">Delete</button></div></div>`).join(''):`<div class="empty">Nothing here yet. Use the form above to add one.</div>`);
+    return;
+  }
+  $('#wl').textContent=S.welcome;
+  $('#ann').innerHTML=D.announcements.length?D.announcements.map(a=>`<div class="card"><h3>${esc(a.title)}</h3><div>${esc(a.body)}</div><div class="meta">${esc(a.date)}</div></div>`).join(''):'<div class="empty">No announcements yet.</div>';
+  const subs=[...new Set(D.handouts.map(h=>h.subject))].sort();
+  $('#sj').innerHTML='<option value="">All subjects</option>'+subs.map(x=>`<option ${x===subj?'selected':''}>${esc(x)}</option>`).join('');
+  const r=D.handouts.filter(h=>(!subj||h.subject===subj)&&(h.title+h.subject).toLowerCase().includes(q.toLowerCase()));
+  $('#hl').innerHTML=r.length?r.map(h=>`<div class="card doc row"><div><h3 style="margin:0">${esc(h.title)}</h3><div class="meta">${esc(h.subject)} · ${esc(h.date)}</div></div><a class="btn sm" style="text-decoration:none" href="${esc(safeUrl(h.link))}" target="_blank" rel="noopener">Open</a></div>`).join(''):'<div class="empty">No handouts match your search.</div>';
+}
+
+Object.assign(window,{
+  setQ:v=>{q=v;paint()},
+  setSubj:v=>{subj=v;paint()},
+  login:async()=>{const u=$('#un').value.trim().toLowerCase();if(!u||!$('#pw').value)return toast('Enter your username and password.');try{await signInWithEmailAndPassword(auth,u+DOMAIN,$('#pw').value)}catch(e){toast(err(e))}},
+  adminLogin:async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider())}catch(e){toast(err(e))}},
+  logout:()=>signOut(auth),
+  go:t=>{tab=t;editing=null;q='';adminView()},
+  cancel:()=>{editing=null;adminView()},
+  edit:id=>{editing=id;adminView();scrollTo(0,0)},
+  del:async(k,id)=>{if(confirm('Remove this item?'))try{await deleteDoc(doc(db,k,id))}catch(e){toast(err(e))}},
+  save:async k=>{
+    const o={};F[k].forEach(([f])=>o[f]=$('#f_'+f).value.trim());
+    if(F[k].some(([f])=>!o[f]))return toast('Fill in every field.');
+    try{
+      if(k==='settings')await setDoc(doc(db,'settings','site'),o);
+      else{
+        if(k==='handouts'&&!/^https?:\/\//i.test(o.link))return toast('The link must start with https://');
+        editing?await updateDoc(doc(db,k,editing),o):await addDoc(collection(db,k),{...o,date:today(),created:serverTimestamp()});
+      }
+      toast('Saved.');editing=null;if(k!=='settings')adminView();
+    }catch(e){toast(err(e))}
+  }
+});
+</script>
+</body>
+</html>
