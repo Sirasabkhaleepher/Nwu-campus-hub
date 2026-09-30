@@ -12,4 +12,9 @@ const firebaseConfig = {
 // Initialize Firebase (compat version for website)
 if (typeof firebase !== 'undefined') {
   firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  console.log("Firebase Connected!");
+} else {
+  console.error("Firebase SDK not loaded yet");
 }
