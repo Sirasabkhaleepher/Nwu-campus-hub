@@ -9,48 +9,121 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <style>
-body{font-family:Arial;margin:0;background:#f5f7ff}
-header{background:#1e40af;color:white;padding:15px;text-align:center}
-.card{background:white;margin:20px;padding:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-button{background:#1e40af;color:white;border:none;padding:12px 20px;border-radius:8px;width:100%;margin-top:10px;font-size:16px}
-input{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}
+*{box-sizing:border-box} body{font-family:Arial;margin:0;background:#f1f5f9}
+header{background:#1e40af;color:white;padding:15px;text-align:center;position:sticky;top:0;z-index:10}
+nav{display:flex;justify-content:center;gap:15px;background:#1e3a8a;padding:8px;color:white;font-size:14px}
+nav a{color:white;text-decoration:none;cursor:pointer}
+.card{background:white;margin:12px;padding:15px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+button{background:#1e40af;color:white;border:none;padding:11px 16px;border-radius:8px;width:100%;margin-top:8px;font-size:15px;cursor:pointer}
+input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:8px}
+.file{background:#f8fafc;padding:10px;border-radius:8px;margin:8px 0;display:flex;justify-content:space-between;align-items:center}
+.badge{background:#dbeafe;color:#1e40af;padding:4px 8px;border-radius:12px;font-size:11px}
 </style>
 </head>
 <body>
-<header><h1>🎓 NWU Campus Hub</h1><p>Northwest University Kano</p></header>
-<div class="card">
-<h2>Welcome!</h2>
-<p id="status">Checking Firebase...</p>
-<div id="authBox">
-<input id="email" type="email" placeholder="Email (e.g. student@nwu.edu.ng)">
+<header><h2 style="margin:0">🎓 NWU Campus Hub</h2><p style="margin:3px;font-size:13px">Northwest University Kano - Software Engineering</p></header>
+<nav>
+<a onclick="show('home')">Home</a>
+<a onclick="show('files')">Files</a>
+<a onclick="show('ann')">Announcements</a>
+<a href="admin.html">Admin</a>
+</nav>
+
+<div id="authCard" class="card">
+<h3 id="welcomeMsg">Welcome! Login to access files</h3>
+<p id="status" style="font-size:13px;color:#64748b">Checking connection...</p>
+<input id="email" type="email" placeholder="Email">
 <input id="password" type="password" placeholder="Password">
+<input id="matric" placeholder="Matric Number (for registration)">
+<select id="level" style="width:100%;padding:11px;margin:6px 0;border-radius:8px;border:1px solid #ddd">
+<option value="">Select Level</option><option>100L</option><option>200L</option><option>300L</option><option>400L</option>
+</select>
 <button onclick="login()">Login</button>
-<button onclick="register()" style="background:#10b981">Register New Student</button>
+<button onclick="register()" style="background:#10b981">Create Account</button>
+<button onclick="logout()" id="logoutBtn" style="display:none;background:#ef4444">Logout</button>
 </div>
+
+<div id="home" class="card">
+<h3>📢 Latest Announcements</h3>
+<div id="annList">Loading...</div>
 </div>
+
+<div id="files" class="card" style="display:none">
+<h3>📚 Lecture Materials & Files</h3>
+<p style="font-size:13px;color:#64748b">All files uploaded by admin will appear here</p>
+<div id="filesList">Login to see files...</div>
+</div>
+
+<div id="ann" class="card" style="display:none">
+<h3>📢 All Announcements</h3>
+<div id="annAllList"></div>
+</div>
+
 <script>
-function check(){
-  if(typeof firebase !== 'undefined' && firebase.apps.length > 0){
-    document.getElementById('status').innerHTML = "✅ Firebase Connected! Project: nwu-campus-hub<br>You can now Login/Register.";
-  } else {
-    document.getElementById('status').innerHTML = "❌ Firebase not connected. Check firebase-config.js";
-  }
+let db, auth, currentUser=null;
+setTimeout(()=>{
+  db=firebase.firestore(); auth=firebase.auth();
+  document.getElementById('status').innerText="✅ Connected to NWU Firebase";
+  auth.onAuthStateChanged(user=>{
+    if(user){
+      currentUser=user;
+      document.getElementById('welcomeMsg').innerText="Hello, "+user.email;
+      document.getElementById('status').innerText="Logged in ✅";
+      document.getElementById('logoutBtn').style.display='block';
+      loadFiles(); loadAnns();
+    } else {
+      document.getElementById('welcomeMsg').innerText="Welcome! Login to access";
+      document.getElementById('logoutBtn').style.display='none';
+    }
+  });
+  loadAnns();
+},1200);
+
+function show(id){
+  document.getElementById('home').style.display=id=='home'?'block':'none';
+  document.getElementById('files').style.display=id=='files'?'block':'none';
+  document.getElementById('ann').style.display=id=='ann'?'block':'none';
+  if(id=='files') loadFiles();
+  if(id=='ann'||id=='home') loadAnns();
 }
-setTimeout(check, 1000);
 
 function register(){
-  const e=document.getElementById('email').value;
-  const p=document.getElementById('password').value;
-  firebase.auth().createUserWithEmailAndPassword(e,p)
-  .then(()=>{alert("Account created! Now login");})
-  .catch(err=>alert(err.message));
+  const e=email.value, p=password.value, m=matric.value, l=level.value;
+  if(!e||!p||!m) return alert("Fill email, password, matric");
+  firebase.auth().createUserWithEmailAndPassword(e,p).then(cred=>{
+    return db.collection("users").doc(cred.user.uid).set({
+      email:e, matric:m, level:l, createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }).then(()=>alert("Account created! Now you can login and see files")).catch(err=>alert(err.message));
 }
 function login(){
-  const e=document.getElementById('email').value;
-  const p=document.getElementById('password').value;
-  firebase.auth().signInWithEmailAndPassword(e,p)
-  .then(()=>{alert("Logged in! Welcome to NWU Hub");})
-  .catch(err=>alert(err.message));
+  firebase.auth().signInWithEmailAndPassword(email.value,password.value)
+  .then(()=>{alert("Welcome!"); show('files');}).catch(e=>alert(e.message));
+}
+function logout(){ firebase.auth().signOut().then(()=>location.reload()); }
+
+function loadFiles(){
+  if(!currentUser){ document.getElementById('filesList').innerHTML="Please login to see files"; return; }
+  db.collection("files").orderBy("createdAt","desc").get().then(snap=>{
+    if(snap.empty){ document.getElementById('filesList').innerHTML="No files uploaded yet by admin"; return; }
+    let h='';
+    snap.forEach(d=>{
+      let f=d.data();
+      h+=`<div class="file"><div><b>${f.title}</b><br><span class="badge">${f.fileName||'File'}</span></div><a href="${f.url}" target="_blank"><button style="width:auto;padding:6px 12px">Download</button></a></div>`;
+    });
+    document.getElementById('filesList').innerHTML=h;
+  });
+}
+function loadAnns(){
+  db.collection("announcements").orderBy("createdAt","desc").limit(10).get().then(snap=>{
+    let h='';
+    snap.forEach(d=>{
+      let a=d.data();
+      h+=`<div style="border-left:4px solid #1e40af;padding:8px;margin:8px 0;background:#f8fafc"><b>${a.title}</b><p style="margin:4px 0;font-size:14px">${a.message}</p><small style="color:#64748b">${a.createdAt?new Date(a.createdAt.seconds*1000).toLocaleDateString():''}</small></div>`;
+    });
+    document.getElementById('annList').innerHTML=h||'No announcements yet';
+    document.getElementById('annAllList').innerHTML=h||'No announcements';
+  });
 }
 </script>
 </body>
