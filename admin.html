@@ -1,33 +1,106 @@
 <!DOCTYPE html>
 <html><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>NWU Admin</title>
+<title>NWU Admin - Direct Upload</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<style>body{font-family:Arial;background:#0f172a;color:white;padding:15px}.card{background:#1e293b;padding:20px;border-radius:15px;max-width:600px;margin:auto}input,select,textarea{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:none}button{background:#2563eb;color:white;padding:12px;border:none;border-radius:8px;width:100%;font-weight:bold;cursor:pointer}</style>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+<style>
+body{font-family:Arial;background:#0f172a;color:white;padding:15px;margin:0}
+.card{background:#1e293b;padding:20px;border-radius:15px;max-width:600px;margin:20px auto}
+input,select{width:100%;padding:14px;margin:8px 0;border-radius:10px;border:none;box-sizing:border-box}
+.attachBox{border:2px dashed #3b82f6;padding:30px;text-align:center;border-radius:15px;background:#0f172a;margin:15px 0;cursor:pointer}
+.attachBox:hover{background:#1e293b}
+button{background:#2563eb;color:white;padding:14px;border:none;border-radius:10px;width:100%;font-weight:bold;font-size:16px;cursor:pointer;margin:5px 0}
+button:disabled{background:gray}
+#progress{height:10px;background:#334155;border-radius:5px;overflow:hidden;display:none;margin:10px 0}
+#bar{height:100%;background:#22c55e;width:0%}
+.fileList{background:#0f172a;padding:10px;border-radius:10px;margin:10px 0}
+</style>
 </head><body>
 <div class="card">
-<h2>🎓 NWU Admin Panel</h2>
-<p id="st">Checking...</p>
-<div id="log"><input id="em" placeholder="Admin Email = Khaleephakabara@gmail.com"><input id="pw" type="password" placeholder="Password"><button onclick="login()">Login</button></div>
-<div id="up" style="display:none">
-<h3>Upload File (Use Google Drive Link)</h3>
+<h2>🎓 NWU Admin - File Center</h2>
+<p id="status">Checking admin...</p>
+
+<div id="loginBox">
+<input id="email" value="Khaleephakabara@gmail.com" placeholder="Admin Email">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="doLogin()">Login</button>
+</div>
+
+<div id="adminBox" style="display:none">
+<h3>📚 Upload to Students</h3>
 <select id="level"><option>100L</option><option selected>200L</option><option>300L</option><option>400L</option></select>
-<input id="course" placeholder="Course Code e.g. SEN201">
-<input id="title" placeholder="Title e.g. Lecture 1 Note">
-<textarea id="link" placeholder="Paste Google Drive share link"></textarea>
-<button onclick="saveFile()">Save File to Students</button>
-<textarea id="ann" placeholder="Announcement text" style="margin-top:20px"></textarea>
-<button onclick="saveAnn()">Post Announcement</button>
+<input id="course" placeholder="Course Code e.g. SEN201 - Data Structure">
+<input id="title" placeholder="File Title e.g. Lecture 1 Note">
+
+<div class="attachBox" onclick="document.getElementById('fileInput').click()">
+<div style="font-size:40px">📎</div>
+<p><b>Click to Attach File</b><br><small>PDF, DOC, PPT, Images</small></p>
+<p id="fileName" style="color:#22c55e"></p>
+<input type="file" id="fileInput" hidden onchange="fileChosen(this)">
+</div>
+
+<div id="progress"><div id="bar"></div></div>
+<p id="percent"></p>
+
+<button id="upBtn" onclick="uploadNow()" disabled>Upload File to Campus Hub</button>
+
+<div style="margin-top:30px">
+<h3>📢 Quick Announcement</h3>
+<input id="ann" placeholder="Type announcement for all students">
+<button onclick="postAnn()" style="background:#16a34a">Post Announcement</button>
+</div>
+
 <p id="msg"></p>
-</div></div>
+</div>
+</div>
+
 <script>
 const firebaseConfig={apiKey:"AIzaSyDGeRhDoDdJzxpyuo7zHg0L50D1Cc6jNmg",authDomain:"nwu-campus-hub.firebaseapp.com",projectId:"nwu-campus-hub",storageBucket:"nwu-campus-hub.firebasestorage.app",messagingSenderId:"1085860624193",appId:"1:1085860624193:web:368c85ba431d99ee2293c0"};
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth(), db=firebase.firestore();
-auth.onAuthStateChanged(u=>{if(u){st.innerText="Logged in: "+u.email;log.style.display='none';up.style.display='block';}else{st.innerText="Please login as Admin";}});
-function login(){auth.signInWithEmailAndPassword(em.value,pw.value).then(()=>location.reload()).catch(e=>alert(e.message))}
-function saveFile(){db.collection("files").add({level:level.value,course:course.value,title:title.value,url:link.value,createdAt:new Date()}).then(()=>{msg.innerText="✅ File Saved! Students can see it now";})}
-function saveAnn(){db.collection("announcements").add({text:ann.value,createdAt:new Date()}).then(()=>{msg.innerText="✅ Announcement Posted!"})}
-</script></body></html>
+const auth=firebase.auth(), db=firebase.firestore(), storage=firebase.storage();
+let selectedFile=null;
+
+auth.onAuthStateChanged(u=>{
+ if(u){status.innerText="Admin: "+u.email; loginBox.style.display='none'; adminBox.style.display='block';}
+ else{status.innerText="Please login";}
+});
+
+function doLogin(){auth.signInWithEmailAndPassword(email.value,pass.value).then(()=>location.reload()).catch(e=>alert(e.message))}
+
+function fileChosen(input){
+ selectedFile=input.files[0];
+ if(selectedFile){
+  fileName.innerText="Selected: "+selectedFile.name+" ("+(selectedFile.size/1024/1024).toFixed(2)+" MB)";
+  upBtn.disabled=false;
+ }
+}
+
+function uploadNow(){
+ if(!selectedFile){alert("Attach file first");return}
+ if(!course.value||!title.value){alert("Fill course and title");return}
+ upBtn.disabled=true; progress.style.display='block';
+ let ref=storage.ref('files/'+level.value+'/'+Date.now()+'_'+selectedFile.name);
+ let task=ref.put(selectedFile);
+ task.on('state_changed', s=>{
+   let p=Math.round((s.bytesTransferred/s.totalBytes)*100);
+   bar.style.width=p+'%'; percent.innerText=p+'% uploading...';
+ }, e=>{alert(e.message);upBtn.disabled=false;}, ()=>{
+   task.snapshot.ref.getDownloadURL().then(url=>{
+     db.collection('files').add({level:level.value,course:course.value,title:title.value,fileName:selectedFile.name,url:url,size:selectedFile.size,createdAt:new Date()}).then(()=>{
+       msg.innerText="✅ SUCCESS! File uploaded. Students can now download it.";
+       percent.innerText="Done!"; bar.style.width='100%'; fileName.innerText=""; selectedFile=null;
+       setTimeout(()=>{progress.style.display='none';upBtn.disabled=true;},2000);
+     })
+   })
+ })
+}
+
+function postAnn(){
+ if(!ann.value)return;
+ db.collection('announcements').add({text:ann.value,createdAt:new Date()}).then(()=>{alert("Announcement posted!"); ann.value="";})
+}
+</script>
+</body></html>
